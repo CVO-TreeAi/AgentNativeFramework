@@ -1,0 +1,246 @@
+#!/bin/bash
+
+# Enhanced Claude Command - Integrates Claude Code with AgentNativeFramework Swarm-Hive Intelligence
+# Usage: claude [hive|swarm] [command] [args...]
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+CLAUDE_ORIG="$(which claude 2>/dev/null || echo "")"
+MCP_SERVER_PATH="$PROJECT_ROOT/mcp_server/swarm_hive_mcp.py"
+
+# Function to show help
+show_help() {
+    echo -e "${CYAN}🧠 Claude Code + AgentNativeFramework Integration${NC}"
+    echo "================================================="
+    echo ""
+    echo -e "${GREEN}Enhanced Commands:${NC}"
+    echo "  claude hive swarm          - Start Claude Code with swarm-hive intelligence"
+    echo "  claude hive                - Start Claude Code with hive intelligence only"
+    echo "  claude swarm              - Start Claude Code with swarm coordination only"
+    echo ""
+    echo -e "${BLUE}Swarm Commands (within Claude Code):${NC}"
+    echo "  Use swarm_create tool      - Create agent swarms"
+    echo "  Use swarm_coordinate tool  - Execute swarm tasks"
+    echo "  Use collaborate tool       - Multi-agent collaboration"
+    echo ""
+    echo -e "${MAGENTA}Hive Commands (within Claude Code):${NC}"
+    echo "  Use hive_decide tool       - Collective decision making"
+    echo "  Use hive_remember tool     - Store collective memory"
+    echo "  Use hive_recall tool       - Retrieve collective memory"
+    echo ""
+    echo -e "${YELLOW}Legacy Commands:${NC}"
+    echo "  claude [original args...]  - Pass through to original claude command"
+    echo ""
+    echo -e "${GREEN}Examples:${NC}"
+    echo "  claude hive swarm          # Start with full collective intelligence"
+    echo "  claude                     # Standard Claude Code"
+    echo ""
+}
+
+# Function to check if swarm-hive integration is available
+check_integration() {
+    if [[ ! -f "$MCP_SERVER_PATH" ]]; then
+        echo -e "${RED}❌ Swarm-Hive integration not found${NC}"
+        echo "Please run: ./scripts/start-swarm-hive.sh start"
+        return 1
+    fi
+    
+    if ! python3 -c "import sys; sys.path.append('$PROJECT_ROOT'); from core.coordination.swarm_hive_coordinator import SwarmHiveCoordinator" 2>/dev/null; then
+        echo -e "${RED}❌ Swarm-Hive dependencies not available${NC}"
+        echo "Please install dependencies: pip3 install structlog prometheus_client pyyaml numpy"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Function to start swarm-hive integration
+start_integration() {
+    echo -e "${BLUE}🚀 Starting Swarm-Hive Integration...${NC}"
+    
+    # Start the Python bridge if not running
+    if ! pgrep -f "python.*daemon_bridge.py" > /dev/null; then
+        echo "Starting Python bridge..."
+        "$PROJECT_ROOT/scripts/start-swarm-hive.sh" start > /dev/null 2>&1 &
+        sleep 2
+    fi
+    
+    echo -e "${GREEN}✅ Integration ready${NC}"
+}
+
+# Function to configure Claude Code with MCP server
+configure_claude_mcp() {
+    local mcp_config_dir="$HOME/.claude"
+    local mcp_config="$mcp_config_dir/mcp.json"
+    
+    # Create config directory if it doesn't exist
+    mkdir -p "$mcp_config_dir"
+    
+    # Create or update MCP configuration
+    cat > "$mcp_config" << EOF
+{
+  "mcpServers": {
+    "swarm-hive": {
+      "command": "python3",
+      "args": ["$MCP_SERVER_PATH"],
+      "env": {}
+    }
+  }
+}
+EOF
+    
+    echo -e "${GREEN}✅ Claude Code configured with Swarm-Hive MCP server${NC}"
+}
+
+# Function to start Claude Code with swarm-hive integration
+start_claude_with_integration() {
+    local mode="$1"
+    
+    echo -e "${CYAN}🧠🐛 Starting Claude Code with $mode Intelligence${NC}"
+    echo "=============================================="
+    echo ""
+    
+    # Check integration
+    if ! check_integration; then
+        exit 1
+    fi
+    
+    # Start integration services
+    start_integration
+    
+    # Configure Claude Code MCP
+    configure_claude_mcp
+    
+    # Show available capabilities
+    echo -e "${GREEN}🎯 Enhanced Capabilities Available:${NC}"
+    echo ""
+    
+    if [[ "$mode" == "Swarm-Hive" ]] || [[ "$mode" == "Hive" ]]; then
+        echo -e "${MAGENTA}🧠 Hive Intelligence:${NC}"
+        echo "  • Collective decision making (hive_decide)"
+        echo "  • Distributed memory storage (hive_remember)"
+        echo "  • Knowledge retrieval (hive_recall)"
+        echo ""
+    fi
+    
+    if [[ "$mode" == "Swarm-Hive" ]] || [[ "$mode" == "Swarm" ]]; then
+        echo -e "${BLUE}🐛 Swarm Coordination:${NC}"
+        echo "  • Agent swarm creation (swarm_create)"
+        echo "  • Task coordination (swarm_coordinate)"
+        echo "  • Multi-agent collaboration (collaborate)"
+        echo ""
+    fi
+    
+    echo -e "${YELLOW}📋 Available Agents:${NC}"
+    echo "  • rust-expert, backend-typescript-architect, performance-optimizer"
+    echo "  • security-auditor, ai-engineer, ios-developer"
+    echo "  • project-supervisor-orchestrator, research-orchestrator"
+    echo ""
+    
+    echo -e "${GREEN}🚀 Example Usage in Claude Code:${NC}"
+    echo ""
+    echo "  # Create a development swarm"
+    echo '  Use the swarm_create tool with:'
+    echo '  {
+    "swarm_id": "dev-team",
+    "topology": "hierarchical", 
+    "agents": ["backend-typescript-architect", "security-auditor", "performance-optimizer"]
+  }'
+    echo ""
+    echo "  # Coordinate task execution"
+    echo '  Use the swarm_coordinate tool with:'
+    echo '  {
+    "swarm_id": "dev-team",
+    "task": "Optimize database performance and security",
+    "complexity": 0.8
+  }'
+    echo ""
+    echo "  # Make collective decisions"
+    echo '  Use the hive_decide tool with:'
+    echo '  {
+    "question": "Which architecture pattern should we use?",
+    "options": ["microservices", "monolith", "serverless"],
+    "agents": ["backend-typescript-architect", "performance-optimizer"],
+    "method": "consensus"
+  }'
+    echo ""
+    
+    # Check if original claude command exists
+    if [[ -n "$CLAUDE_ORIG" ]]; then
+        echo -e "${CYAN}Starting Claude Code with enhanced capabilities...${NC}"
+        echo ""
+        exec "$CLAUDE_ORIG" "$@"
+    else
+        echo -e "${RED}❌ Original 'claude' command not found${NC}"
+        echo "Please install Claude Code first:"
+        echo "  npm install -g @anthropic/claude-code"
+        echo "  # or download from https://claude.ai/code"
+        exit 1
+    fi
+}
+
+# Main command processing
+main() {
+    case "${1:-}" in
+        "hive")
+            case "${2:-}" in
+                "swarm")
+                    shift 2
+                    start_claude_with_integration "Swarm-Hive" "$@"
+                    ;;
+                *)
+                    shift 1
+                    start_claude_with_integration "Hive" "$@"
+                    ;;
+            esac
+            ;;
+        
+        "swarm")
+            shift 1
+            start_claude_with_integration "Swarm" "$@"
+            ;;
+        
+        "help"|"--help"|"-h")
+            show_help
+            ;;
+        
+        "")
+            # No arguments - check if original claude exists
+            if [[ -n "$CLAUDE_ORIG" ]]; then
+                exec "$CLAUDE_ORIG"
+            else
+                show_help
+            fi
+            ;;
+        
+        *)
+            # Pass through to original claude command
+            if [[ -n "$CLAUDE_ORIG" ]]; then
+                exec "$CLAUDE_ORIG" "$@"
+            else
+                echo -e "${RED}❌ Original 'claude' command not found${NC}"
+                echo "Install Claude Code or use enhanced commands:"
+                show_help
+                exit 1
+            fi
+            ;;
+    esac
+}
+
+# Handle script interruption
+trap 'echo -e "\n${YELLOW}Claude session ended${NC}"; exit 0' INT TERM
+
+# Run main function
+main "$@"
