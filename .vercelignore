@@ -1,0 +1,19 @@
+# Vercel ignore file
+.git
+node_modules
+.pids
+logs
+*.log
+*.tar.gz
+.DS_Store
+Cargo.toml
+src/
+core/
+mcp_server/
+scripts/
+bin/
+config/
+deployments/
+*.py
+*.rs
+*.sh

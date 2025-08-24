@@ -1,14 +1,15 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
+  "version": 2,
+  "builds": [
+    {
+      "src": "**",
+      "use": "@vercel/static"
+    }
+  ],
   "rewrites": [
     {
       "source": "/guide",
       "destination": "/docs/how-to-guide.html"
-    },
-    {
-      "source": "/start", 
-      "destination": "/START_HERE.md"
     }
   ]
 }
