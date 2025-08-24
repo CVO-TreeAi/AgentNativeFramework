@@ -3,9 +3,11 @@
 
 use std::collections::HashMap;
 use std::sync::Arc;
-use tokio::net::UnixListener;
+use tokio::net::{UnixListener, UnixStream};
 use tokio::sync::{Mutex, RwLock};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use serde::{Deserialize, Serialize};
+use serde_json;
 use tracing::{info, warn, error, debug};
 use uuid::Uuid;
 
@@ -198,13 +200,71 @@ impl AgentPool {
 pub struct AgentDaemon {
     pool: AgentPool,
     socket_path: String,
+    python_bridge: Option<PythonBridge>,
+}
+
+// Python bridge for swarm-hive coordination
+#[derive(Clone)]
+pub struct PythonBridge {
+    socket_path: String,
+}
+
+impl PythonBridge {
+    pub fn new(socket_path: String) -> Self {
+        Self { socket_path }
+    }
+    
+    pub async fn send_command(&self, command: serde_json::Value) -> anyhow::Result<serde_json::Value> {
+        // Connect to Python daemon bridge
+        match UnixStream::connect(&self.socket_path).await {
+            Ok(mut stream) => {
+                // Send command
+                let command_str = serde_json::to_string(&command)?;
+                stream.write_all((command_str + "\n").as_bytes()).await?;
+                
+                // Read response
+                let mut buffer = Vec::new();
+                let mut temp_buffer = [0u8; 1024];
+                
+                loop {
+                    match stream.read(&mut temp_buffer).await {
+                        Ok(0) => break, // Connection closed
+                        Ok(n) => {
+                            buffer.extend_from_slice(&temp_buffer[..n]);
+                            if buffer.ends_with(b"\n") {
+                                break;
+                            }
+                        }
+                        Err(e) => return Err(e.into()),
+                    }
+                }
+                
+                let response_str = String::from_utf8_lossy(&buffer);
+                let response: serde_json::Value = serde_json::from_str(response_str.trim())?;
+                Ok(response)
+            }
+            Err(e) => {
+                warn!("Failed to connect to Python bridge: {}", e);
+                Err(e.into())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Command {
+    pub action: String,
+    pub params: serde_json::Value,
 }
 
 impl AgentDaemon {
     pub fn new(socket_path: String) -> Self {
+        let python_bridge = PythonBridge::new("/tmp/anf_python.sock".to_string());
+        
         Self {
             pool: AgentPool::new(),
             socket_path,
+            python_bridge: Some(python_bridge),
         }
     }
 
@@ -227,8 +287,9 @@ impl AgentDaemon {
         // Accept connections
         while let Ok((stream, _)) = listener.accept().await {
             let pool = self.pool.clone();
+            let python_bridge = self.python_bridge.clone();
             tokio::spawn(async move {
-                if let Err(e) = Self::handle_connection(stream, pool).await {
+                if let Err(e) = Self::handle_connection(stream, pool, python_bridge).await {
                     error!("Connection error: {}", e);
                 }
             });
@@ -265,11 +326,146 @@ impl AgentDaemon {
     }
 
     async fn handle_connection(
-        _stream: tokio::net::UnixStream, 
-        _pool: AgentPool
+        mut stream: UnixStream, 
+        pool: AgentPool,
+        python_bridge: Option<PythonBridge>
     ) -> anyhow::Result<()> {
-        // Handle CLI commands from Unix socket
+        let mut buffer = Vec::new();
+        let mut temp_buffer = [0u8; 1024];
+        
+        // Read command from client
+        loop {
+            match stream.read(&mut temp_buffer).await {
+                Ok(0) => break, // Connection closed
+                Ok(n) => {
+                    buffer.extend_from_slice(&temp_buffer[..n]);
+                    if buffer.ends_with(b"\n") {
+                        break;
+                    }
+                }
+                Err(e) => return Err(e.into()),
+            }
+        }
+        
+        let command_str = String::from_utf8_lossy(&buffer);
+        debug!("Received command: {}", command_str.trim());
+        
+        // Parse command
+        let response = if let Ok(command) = serde_json::from_str::<Command>(command_str.trim()) {
+            Self::process_command(command, &pool, &python_bridge).await
+        } else {
+            // Try simple string commands for backward compatibility
+            Self::process_simple_command(command_str.trim(), &pool, &python_bridge).await
+        };
+        
+        // Send response
+        let response_str = serde_json::to_string(&response).unwrap_or_else(|_| 
+            r#"{"error": "Failed to serialize response"}"#.to_string()
+        );
+        
+        stream.write_all((response_str + "\n").as_bytes()).await?;
+        stream.flush().await?;
+        
         Ok(())
+    }
+    
+    async fn process_command(
+        command: Command,
+        pool: &AgentPool,
+        python_bridge: &Option<PythonBridge>
+    ) -> serde_json::Value {
+        match command.action.as_str() {
+            // Regular agent commands
+            "spawn_agent" => {
+                if let Some(agent_id) = command.params.get("agent_id").and_then(|v| v.as_str()) {
+                    match pool.spawn_agent(agent_id).await {
+                        Ok(result) => serde_json::json!({"success": true, "message": result}),
+                        Err(e) => serde_json::json!({"error": e.to_string()}),
+                    }
+                } else {
+                    serde_json::json!({"error": "Missing agent_id parameter"})
+                }
+            },
+            
+            "list_agents" => {
+                let category = command.params.get("category").and_then(|v| v.as_str());
+                let agents = pool.list_agents(category).await;
+                serde_json::json!({"success": true, "agents": agents})
+            },
+            
+            "agent_status" => {
+                if let Some(agent_id) = command.params.get("agent_id").and_then(|v| v.as_str()) {
+                    if let Some(status) = pool.get_agent_status(agent_id).await {
+                        serde_json::json!({"success": true, "status": status})
+                    } else {
+                        serde_json::json!({"error": "Agent not found"})
+                    }
+                } else {
+                    serde_json::json!({"error": "Missing agent_id parameter"})
+                }
+            },
+            
+            // Swarm-Hive commands - delegate to Python bridge
+            "swarm_create" | "swarm_execute" | "swarm_status" | "swarm_dissolve" | "swarm_list" |
+            "hive_init" | "hive_decide" | "hive_remember" | "hive_recall" | "hive_status" |
+            "collaborate" => {
+                if let Some(bridge) = python_bridge {
+                    let python_command = serde_json::json!({
+                        "action": command.action,
+                        "params": command.params
+                    });
+                    
+                    match bridge.send_command(python_command).await {
+                        Ok(response) => response,
+                        Err(e) => serde_json::json!({"error": format!("Python bridge error: {}", e)})
+                    }
+                } else {
+                    serde_json::json!({"error": "Python bridge not available"})
+                }
+            },
+            
+            _ => serde_json::json!({"error": format!("Unknown command: {}", command.action)}),
+        }
+    }
+    
+    async fn process_simple_command(
+        command_str: &str,
+        pool: &AgentPool,
+        python_bridge: &Option<PythonBridge>
+    ) -> serde_json::Value {
+        let parts: Vec<&str> = command_str.split(':').collect();
+        
+        match parts.get(0) {
+            Some(&"spawn") => {
+                if let Some(&agent_id) = parts.get(1) {
+                    match pool.spawn_agent(agent_id).await {
+                        Ok(result) => serde_json::json!({"success": true, "message": result}),
+                        Err(e) => serde_json::json!({"error": e.to_string()}),
+                    }
+                } else {
+                    serde_json::json!({"error": "Usage: spawn:<agent_id>"})
+                }
+            },
+            
+            Some(&"list") => {
+                let agents = pool.list_agents(None).await;
+                serde_json::json!({"success": true, "agents": agents})
+            },
+            
+            Some(&"ask") => {
+                if let Some(prompt) = parts.get(1) {
+                    // For now, return a placeholder response
+                    serde_json::json!({
+                        "success": true, 
+                        "response": format!("Processing: {}", prompt)
+                    })
+                } else {
+                    serde_json::json!({"error": "Usage: ask:<prompt>"})
+                }
+            },
+            
+            _ => serde_json::json!({"error": format!("Unknown command: {}", command_str)}),
+        }
     }
 }
 

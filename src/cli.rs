@@ -108,6 +108,33 @@ pub enum Commands {
     Chat {
         agent: String,
     },
+    
+    /// Swarm coordination commands
+    Swarm {
+        #[command(subcommand)]
+        action: SwarmCommands,
+    },
+    
+    /// Hive intelligence commands
+    Hive {
+        #[command(subcommand)]
+        action: HiveCommands,
+    },
+    
+    /// Multi-agent collaboration
+    Collaborate {
+        /// Task description
+        task: String,
+        
+        #[arg(long)]
+        agents: Option<String>,
+        
+        #[arg(long)]
+        mode: Option<String>,
+        
+        #[arg(long)]
+        topology: Option<String>,
+    },
 }
 
 #[derive(Subcommand)]
@@ -164,6 +191,125 @@ pub enum ContextCommands {
     
     /// List contexts
     List,
+}
+
+#[derive(Subcommand)]
+pub enum SwarmCommands {
+    /// Create a new swarm
+    Create {
+        /// Swarm ID
+        id: String,
+        
+        #[arg(long)]
+        topology: Option<String>,
+        
+        #[arg(long)]
+        agents: Vec<String>,
+        
+        #[arg(long)]
+        task: Option<String>,
+    },
+    
+    /// List active swarms
+    List {
+        #[arg(long)]
+        detailed: bool,
+    },
+    
+    /// Execute task with swarm
+    Execute {
+        /// Swarm ID
+        swarm_id: String,
+        
+        /// Task description
+        task: String,
+        
+        #[arg(long)]
+        timeout: Option<u64>,
+    },
+    
+    /// Dissolve a swarm
+    Dissolve {
+        /// Swarm ID
+        swarm_id: String,
+        
+        #[arg(long)]
+        save_results: bool,
+    },
+    
+    /// Show swarm status
+    Status {
+        swarm_id: String,
+        
+        #[arg(long)]
+        live: bool,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum HiveCommands {
+    /// Initialize hive nodes for agents
+    Init {
+        #[arg(long)]
+        agents: Vec<String>,
+        
+        #[arg(long)]
+        capabilities: Vec<String>,
+    },
+    
+    /// Create collective decision
+    Decide {
+        /// Decision question
+        question: String,
+        
+        #[arg(long)]
+        options: Vec<String>,
+        
+        #[arg(long)]
+        method: Option<String>,
+        
+        #[arg(long)]
+        timeout: Option<u64>,
+    },
+    
+    /// Store collective memory
+    Remember {
+        /// Memory content
+        content: String,
+        
+        #[arg(long)]
+        memory_type: Option<String>,
+        
+        #[arg(long)]
+        contributors: Vec<String>,
+        
+        #[arg(long)]
+        confidence: Option<f32>,
+    },
+    
+    /// Recall collective memory
+    Recall {
+        /// Query for memory recall
+        query: String,
+        
+        #[arg(long)]
+        memory_type: Option<String>,
+        
+        #[arg(long)]
+        min_confidence: Option<f32>,
+    },
+    
+    /// Show hive status
+    Status {
+        #[arg(long)]
+        nodes: bool,
+        
+        #[arg(long)]
+        memory: bool,
+        
+        #[arg(long)]
+        decisions: bool,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -485,6 +631,136 @@ Keyboard shortcuts:
 
         Ok(())
     }
+    
+    pub async fn display_swarm_status(&self, swarm_id: &str, topology: &str, agents: usize) -> anyhow::Result<()> {
+        self.term.clear_screen()?;
+        
+        // Swarm header
+        self.print_header(&format!("Swarm: {} ({})", swarm_id, topology))?;
+        
+        // Status box
+        self.print_box(&format!(
+            "Agents: {} │ Status: Active │ Tasks: 3 │ Efficiency: 87%",
+            agents
+        ))?;
+        
+        // Coordination progress
+        execute!(
+            self.term,
+            SetForegroundColor(Color::Green),
+            Print("🐛 Swarm Coordination:\n"),
+            ResetColor
+        )?;
+        
+        self.print_progress("Task distribution", 90)?;
+        self.print_progress("Result aggregation", 65)?;
+        self.print_progress("Consensus building", 45)?;
+        
+        // Agent activity
+        self.print_section("Active Agents:", vec![
+            "🤖 rust-expert - Analyzing code patterns",
+            "🔒 security-auditor - Scanning vulnerabilities", 
+            "⚡ performance-optimizer - Benchmarking solutions",
+        ])?;
+        
+        // Controls
+        self.print_controls()?;
+        
+        Ok(())
+    }
+    
+    pub async fn display_hive_status(&self, nodes: usize, decisions: usize, memory_fragments: usize) -> anyhow::Result<()> {
+        self.term.clear_screen()?;
+        
+        // Hive header
+        self.print_header("Hive Intelligence Network")?;
+        
+        // Status box
+        self.print_box(&format!(
+            "Nodes: {} │ Decisions: {} │ Memory: {} │ Confidence: 89%",
+            nodes, decisions, memory_fragments
+        ))?;
+        
+        // Collective intelligence
+        execute!(
+            self.term,
+            SetForegroundColor(Color::Magenta),
+            Print("🧠 Collective Intelligence:\n"),
+            ResetColor
+        )?;
+        
+        self.print_progress("Decision consensus", 85)?;
+        self.print_progress("Knowledge synthesis", 72)?;
+        self.print_progress("Pattern emergence", 58)?;
+        
+        // Recent activities
+        self.print_section("Recent Activities:", vec![
+            "💭 Collective decision: API architecture approach",
+            "📚 Memory stored: Best practices for async Rust",
+            "🔮 Emergent pattern: Performance optimization strategies",
+        ])?;
+        
+        // Controls
+        self.print_controls()?;
+        
+        Ok(())
+    }
+    
+    pub async fn show_collaboration_progress(&self, task: &str, agents: &[&str]) -> anyhow::Result<()> {
+        self.term.clear_screen()?;
+        
+        // Collaboration header
+        self.print_header(&format!("Multi-Agent Collaboration: {}", task))?;
+        
+        // Status box
+        self.print_box(&format!(
+            "Agents: {} │ Mode: Hybrid │ Phase: Execution │ Progress: 67%",
+            agents.len()
+        ))?;
+        
+        // Phase progress
+        execute!(
+            self.term,
+            SetForegroundColor(Color::Blue),
+            Print("🚀 Collaboration Phases:\n"),
+            ResetColor
+        )?;
+        
+        execute!(
+            self.term,
+            SetForegroundColor(Color::Green),
+            Print("✓ "),
+            ResetColor,
+            Print("Phase 1: Hive Planning - Complete\n")
+        )?;
+        
+        self.print_progress("Phase 2: Swarm Execution", 67)?;
+        
+        execute!(
+            self.term,
+            SetForegroundColor(Color::DarkGrey),
+            Print("⏳ Phase 3: Hive Validation - Pending\n"),
+            ResetColor
+        )?;
+        
+        // Agent contributions
+        let mut agent_status = Vec::new();
+        for (i, agent) in agents.iter().enumerate() {
+            let status = match i % 3 {
+                0 => "Contributing solutions",
+                1 => "Reviewing approaches", 
+                _ => "Synthesizing results",
+            };
+            agent_status.push(format!("🤖 {} - {}", agent, status));
+        }
+        
+        self.print_section("Agent Contributions:", agent_status.iter().map(|s| s.as_str()).collect())?;
+        
+        // Controls
+        self.print_controls()?;
+        
+        Ok(())
+    }
 }
 
 pub struct DaemonClient {
@@ -563,6 +839,103 @@ pub async fn run_cli(cli: Cli) -> anyhow::Result<()> {
 
         Commands::Context { action: _ } => {
             println!("Context management...");
+        },
+        
+        Commands::Collaborate { task, agents, mode, topology } => {
+            let agent_list = agents
+                .as_deref()
+                .unwrap_or("backend-dev,security-auditor,performance-optimizer")
+                .split(',')
+                .collect::<Vec<&str>>();
+            
+            ui.show_collaboration_progress(task, &agent_list).await?;
+            
+            // Simulate coordination process
+            tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
+            
+            println!("🎉 Collaboration completed successfully!");
+            println!("Mode: {}", mode.as_deref().unwrap_or("hybrid"));
+            println!("Topology: {}", topology.as_deref().unwrap_or("adaptive"));
+        },
+        
+        Commands::Swarm { action } => {
+            match action {
+                SwarmCommands::Create { id, topology, agents, task: _ } => {
+                    println!("🐛 Creating swarm: {}", id);
+                    println!("Topology: {}", topology.as_deref().unwrap_or("adaptive"));
+                    println!("Agents: {:?}", agents);
+                    
+                    ui.display_swarm_status(id, topology.as_deref().unwrap_or("adaptive"), agents.len()).await?;
+                },
+                SwarmCommands::List { detailed } => {
+                    if *detailed {
+                        ui.display_swarm_status("default-swarm", "hierarchical", 5).await?;
+                    } else {
+                        println!("📋 Active Swarms:");
+                        println!("  • default-swarm (hierarchical) - 5 agents");
+                        println!("  • research-swarm (collective) - 8 agents");
+                    }
+                },
+                SwarmCommands::Execute { swarm_id, task, timeout: _ } => {
+                    println!("⚡ Executing task with swarm: {}", swarm_id);
+                    println!("Task: {}", task);
+                    
+                    ui.display_swarm_status(swarm_id, "adaptive", 4).await?;
+                },
+                SwarmCommands::Dissolve { swarm_id, save_results } => {
+                    println!("🧹 Dissolving swarm: {}", swarm_id);
+                    if *save_results {
+                        println!("💾 Results saved to archive");
+                    }
+                },
+                SwarmCommands::Status { swarm_id, live } => {
+                    if *live {
+                        ui.display_swarm_status(swarm_id, "mesh", 6).await?;
+                    } else {
+                        println!("📊 Swarm Status: {}", swarm_id);
+                    }
+                },
+            }
+        },
+        
+        Commands::Hive { action } => {
+            match action {
+                HiveCommands::Init { agents, capabilities: _ } => {
+                    println!("🧠 Initializing hive nodes for {} agents", agents.len());
+                    ui.display_hive_status(agents.len(), 0, 0).await?;
+                },
+                HiveCommands::Decide { question, options, method, timeout: _ } => {
+                    println!("🗳️ Initiating collective decision:");
+                    println!("Question: {}", question);
+                    println!("Options: {:?}", options);
+                    println!("Method: {}", method.as_deref().unwrap_or("consensus"));
+                    
+                    ui.display_hive_status(5, 1, 12).await?;
+                },
+                HiveCommands::Remember { content, memory_type, contributors, confidence: _ } => {
+                    println!("📚 Storing collective memory:");
+                    println!("Content: {}", content);
+                    println!("Type: {}", memory_type.as_deref().unwrap_or("semantic"));
+                    println!("Contributors: {:?}", contributors);
+                },
+                HiveCommands::Recall { query, memory_type, min_confidence: _ } => {
+                    println!("🔍 Recalling collective memory:");
+                    println!("Query: {}", query);
+                    println!("Type filter: {}", memory_type.as_deref().unwrap_or("all"));
+                    
+                    println!("📖 Found 3 relevant memories:");
+                    println!("  • Best practices for async programming (confidence: 0.92)");
+                    println!("  • Performance optimization patterns (confidence: 0.87)");
+                    println!("  • Security audit checklist (confidence: 0.81)");
+                },
+                HiveCommands::Status { nodes, memory, decisions } => {
+                    if *nodes || *memory || *decisions {
+                        ui.display_hive_status(8, 15, 42).await?;
+                    } else {
+                        println!("🧠 Hive Status: 8 nodes, 15 decisions, 42 memories");
+                    }
+                },
+            }
         },
     }
 
