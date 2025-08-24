@@ -1,0 +1,52 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+
+# API Keys
+api-keys/
+secrets/
+*.key
+
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Agent logs
+logs/
+*.log
+agent-memory/
+temp-memory/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+*.build/
+
+# Temporary files
+tmp/
+temp/
+cache/
