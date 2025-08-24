@@ -1,0 +1,2396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠🐛 Claude Hive Swarm - Complete How-To Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Core Colors */
+            --primary: #6366f1;
+            --primary-light: #8b5cf6;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --secondary-light: #34d399;
+            --secondary-dark: #059669;
+            --accent: #06b6d4;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            
+            /* Background Colors */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2d2d2d;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --text-tertiary: #9ca3af;
+            --text-muted: #6b7280;
+            
+            /* Spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Typography */
+            --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-family-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-md: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+            
+            /* Effects */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family-base);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: var(--space-lg);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Particle background animation */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 20s infinite linear;
+        }
+        
+        .particle:nth-child(2n) {
+            background: var(--secondary);
+            animation-delay: -5s;
+            animation-duration: 25s;
+        }
+        
+        .particle:nth-child(3n) {
+            background: var(--accent);
+            animation-delay: -10s;
+            animation-duration: 30s;
+        }
+        
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0.3;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            to {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            padding: var(--space-2xl);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+            border-radius: var(--radius-xl);
+            color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0.1) 0%, 
+                transparent 50%, 
+                rgba(255,255,255,0.1) 100%);
+            transform: translateX(-100%);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .header h1 {
+            font-size: clamp(var(--font-size-3xl), 4vw, var(--font-size-4xl));
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ffffff, #f0f9ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header p {
+            font-size: var(--font-size-xl);
+            font-weight: 400;
+            opacity: 0.95;
+            margin-bottom: var(--space-lg);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header-stats {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-xl);
+            margin-top: var(--space-lg);
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: var(--space-md);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
+            margin-top: var(--space-xs);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-2xl);
+            flex-wrap: wrap;
+            position: relative;
+        }
+        
+        .nav-button {
+            position: relative;
+            padding: var(--space-md) var(--space-xl);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: var(--font-family-base);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .nav-button:hover {
+            color: var(--text-primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .nav-button:hover::before {
+            left: 100%;
+        }
+        
+        .nav-button.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--text-primary);
+            border-color: var(--primary-light);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .nav-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: var(--secondary);
+            border-radius: 1px;
+            box-shadow: 0 0 8px var(--secondary);
+        }
+        
+        .section {
+            display: none;
+            margin-bottom: var(--space-2xl);
+            padding: var(--space-2xl);
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .section.active {
+            display: block;
+            animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes slideInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .section h2 {
+            color: var(--primary);
+            margin-bottom: var(--space-xl);
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            line-height: 1.3;
+        }
+        
+        .section h2 .emoji {
+            font-size: 1.2em;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% {
+                transform: translate3d(0,0,0);
+            }
+            40%, 43% {
+                transform: translate3d(0, -8px, 0);
+            }
+            70% {
+                transform: translate3d(0, -4px, 0);
+            }
+            90% {
+                transform: translate3d(0, -2px, 0);
+            }
+        }
+        
+        .section h3 {
+            color: var(--secondary);
+            margin: var(--space-2xl) 0 var(--space-lg) 0;
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            position: relative;
+            padding-left: var(--space-lg);
+        }
+        
+        .section h3::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--secondary), var(--secondary-light));
+            border-radius: 2px;
+        }
+        
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            padding-top: calc(var(--space-xl) + 30px);
+            margin: var(--space-lg) 0;
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            position: relative;
+            overflow-x: auto;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+        
+        .code-block:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-md);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--text-primary);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .code-block-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-md);
+            gap: var(--space-sm);
+        }
+        
+        .code-window-controls {
+            display: flex;
+            gap: var(--space-xs);
+        }
+        
+        .code-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .code-control.close { background: #ff5f57; }
+        .code-control.minimize { background: #ffbd2e; }
+        .code-control.maximize { background: #28ca42; }
+        
+        .copy-button {
+            position: absolute;
+            top: var(--space-sm);
+            left: var(--space-md);
+            background: var(--secondary);
+            color: var(--text-primary);
+            border: none;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .code-block:hover .copy-button {
+            opacity: 1;
+        }
+        
+        .copy-button:hover {
+            background: var(--secondary-light);
+            transform: scale(1.05);
+        }
+        
+        .copy-button.copied {
+            background: var(--secondary-light);
+            transform: scale(0.95);
+        }
+        
+        /* Syntax highlighting simulation */
+        .code-keyword { color: #ff79c6; font-weight: 600; }
+        .code-string { color: #f1fa8c; }
+        .code-comment { color: #6272a4; font-style: italic; }
+        .code-number { color: #bd93f9; }
+        .code-function { color: #50fa7b; }
+        .code-variable { color: #8be9fd; }
+        .code-operator { color: #ff79c6; }
+        
+        .execution-demo {
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--secondary);
+        }
+        
+        .execution-demo h5 {
+            color: var(--secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .execution-output {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            white-space: pre-wrap;
+        }
+        
+        .run-demo-btn {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+            color: var(--text-primary);
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .run-demo-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .step {
+            background: linear-gradient(135deg, 
+                rgba(16, 185, 129, 0.08), 
+                rgba(16, 185, 129, 0.03));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin: var(--space-lg) 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            border-color: var(--secondary);
+            background: linear-gradient(135deg, 
+                rgba(16, 185, 129, 0.15), 
+                rgba(16, 185, 129, 0.05));
+            transform: translateX(4px);
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: var(--space-lg);
+            font-size: var(--font-size-lg);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            position: relative;
+        }
+        
+        .step-number::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .step:hover .step-number::after {
+            opacity: 0.3;
+        }
+        
+        .step strong {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: var(--font-size-lg);
+        }
+        
+        .warning {
+            background: linear-gradient(135deg, 
+                rgba(245, 158, 11, 0.1), 
+                rgba(245, 158, 11, 0.05));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            color: var(--warning);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .warning::before {
+            content: '⚠️';
+            position: absolute;
+            left: var(--space-lg);
+            top: var(--space-lg);
+            font-size: var(--font-size-lg);
+            animation: pulse 2s infinite;
+        }
+        
+        .warning strong {
+            margin-left: var(--space-2xl);
+            display: block;
+        }
+        
+        .success {
+            background: linear-gradient(135deg, 
+                rgba(16, 185, 129, 0.1), 
+                rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            color: var(--secondary-light);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .success::before {
+            content: '✅';
+            position: absolute;
+            left: var(--space-lg);
+            top: var(--space-lg);
+            font-size: var(--font-size-lg);
+            animation: bounce 1s;
+        }
+        
+        .success strong {
+            margin-left: var(--space-2xl);
+            display: block;
+            color: var(--secondary);
+        }
+        
+        .error {
+            background: linear-gradient(135deg, 
+                rgba(239, 68, 68, 0.1), 
+                rgba(239, 68, 68, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            color: #f87171;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .error::before {
+            content: '❌';
+            position: absolute;
+            left: var(--space-lg);
+            top: var(--space-lg);
+            font-size: var(--font-size-lg);
+        }
+        
+        .error strong {
+            margin-left: var(--space-2xl);
+            display: block;
+            color: var(--error);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #6366f1;
+        }
+        
+        .feature-card h4 {
+            color: #6366f1;
+            margin-bottom: 10px;
+        }
+        
+        .progress-container {
+            position: fixed;
+            bottom: var(--space-xl);
+            right: var(--space-xl);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            padding: var(--space-lg);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
+            min-width: 250px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .progress-header {
+            color: var(--primary);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-md);
+            padding: 0 var(--space-xs);
+        }
+        
+        .progress-step {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.completed {
+            background: var(--secondary);
+            box-shadow: 0 0 8px var(--secondary);
+        }
+        
+        .progress-step.active {
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+            animation: pulse 2s infinite;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: var(--space-sm) 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary), var(--accent));
+            background-size: 200% 100%;
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: gradient-flow 3s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+            animation: shimmer-progress 2s ease-in-out infinite;
+        }
+        
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes shimmer-progress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .progress-text {
+            color: var(--text-tertiary);
+            font-size: var(--font-size-xs);
+            margin-top: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .progress-percentage {
+            font-weight: 600;
+            color: var(--primary);
+            margin-left: auto;
+        }
+        
+        .interactive-example {
+            background: rgba(79, 70, 229, 0.1);
+            border: 2px solid #4f46e5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .try-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .try-button:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        
+        .terminal {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #00ff00;
+            font-family: 'SF Mono', Monaco, monospace;
+            position: relative;
+        }
+        
+        .terminal::before {
+            content: "Terminal";
+            position: absolute;
+            top: -15px;
+            left: 15px;
+            background: #000;
+            color: #666;
+            padding: 0 10px;
+            font-size: 0.8rem;
+        }
+        
+        .terminal-prompt {
+            color: #00ff00;
+        }
+        
+        .terminal-output {
+            color: #ccc;
+            margin-left: 20px;
+        }
+        
+        .tool-demo {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid #8b5cf6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .tool-demo h4 {
+            color: #8b5cf6;
+            margin-bottom: 10px;
+        }
+        
+        .collapsible {
+            cursor: pointer;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            color: inherit;
+            width: 100%;
+            text-align: left;
+            margin: 5px 0;
+            transition: background 0.3s;
+        }
+        
+        .collapsible:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .collapsible.active {
+            background: rgba(99, 102, 241, 0.2);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 15px;
+        }
+        
+        .collapsible-content.active {
+            max-height: 1000px;
+            padding: 15px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-green { background: #10b981; }
+        .status-yellow { background: #f59e0b; }
+        .status-red { background: #ef4444; }
+        
+        /* Mobile-first responsive design */
+        @media (max-width: 480px) {
+            body {
+                padding: var(--space-md);
+            }
+            
+            .container {
+                padding: var(--space-lg);
+                border-radius: var(--radius-lg);
+            }
+            
+            .header {
+                padding: var(--space-lg);
+            }
+            
+            .header h1 {
+                font-size: var(--font-size-3xl);
+            }
+            
+            .header p {
+                font-size: var(--font-size-lg);
+            }
+            
+            .header-stats {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+            
+            .nav-button {
+                width: 100%;
+                padding: var(--space-lg);
+                font-size: var(--font-size-md);
+            }
+            
+            .section {
+                padding: var(--space-lg);
+            }
+            
+            .section h2 {
+                font-size: var(--font-size-2xl);
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-sm);
+            }
+            
+            .section h3 {
+                font-size: var(--font-size-xl);
+                padding-left: 0;
+                text-align: center;
+            }
+            
+            .section h3::before {
+                display: none;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .step {
+                padding: var(--space-lg);
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .step-number {
+                margin-bottom: var(--space-md);
+                margin-right: 0;
+            }
+            
+            .code-block {
+                font-size: var(--font-size-xs);
+                padding: var(--space-md);
+                padding-top: calc(var(--space-md) + 35px);
+            }
+            
+            .progress-container {
+                bottom: var(--space-md);
+                right: var(--space-md);
+                left: var(--space-md);
+                min-width: auto;
+            }
+            
+            .particles .particle {
+                display: none; /* Reduce animation load on mobile */
+            }
+        }
+        
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container {
+                padding: var(--space-xl);
+            }
+            
+            .header {
+                padding: var(--space-xl);
+            }
+            
+            .navigation {
+                gap: var(--space-sm);
+            }
+            
+            .nav-button {
+                padding: var(--space-sm) var(--space-lg);
+            }
+            
+            .feature-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .progress-container {
+                bottom: var(--space-lg);
+                right: var(--space-lg);
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+            
+            .header-stats {
+                gap: var(--space-lg);
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --bg-primary: #000000;
+                --bg-secondary: #111111;
+                --text-primary: #ffffff;
+                --text-secondary: #ffffff;
+                --primary: #ffffff;
+                --secondary: #ffffff;
+            }
+            
+            .nav-button {
+                border: 2px solid currentColor;
+            }
+            
+            .code-block {
+                border: 2px solid currentColor;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .particles {
+                display: none;
+            }
+        }
+        
+        /* Dark mode preference (system) */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-primary: #ffffff;
+                --bg-secondary: #f8fafc;
+                --bg-tertiary: #e2e8f0;
+                --text-primary: #1a202c;
+                --text-secondary: #2d3748;
+                --text-tertiary: #4a5568;
+            }
+        }
+
+        /* Screen reader only content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles for accessibility */
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .nav-button:focus,
+        .copy-button:focus,
+        .try-button:focus,
+        .run-demo-btn:focus {
+            outline: 2px solid var(--secondary);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle background for swarm visualization -->
+    <div class="particles" aria-hidden="true">
+        <!-- Particles will be generated by JavaScript -->
+    </div>
+
+    <div class="container">
+        <header class="header" role="banner">
+            <h1>🧠🐛 Claude Hive Swarm</h1>
+            <p>Complete How-To Guide: From Zero to Collective AI Intelligence</p>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="stat-number">300+</span>
+                    <span class="stat-label">AI Agents</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">∞</span>
+                    <span class="stat-label">Possibilities</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1</span>
+                    <span class="stat-label">Collective Mind</span>
+                </div>
+            </div>
+        </header>
+
+        <nav class="navigation" role="navigation" aria-label="Guide navigation">
+            <button class="nav-button active" onclick="showSection('overview')" 
+                    aria-pressed="true" aria-describedby="overview-desc">
+                📋 Overview
+            </button>
+            <button class="nav-button" onclick="showSection('setup')" 
+                    aria-pressed="false" aria-describedby="setup-desc">
+                🚀 Setup
+            </button>
+            <button class="nav-button" onclick="showSection('workflows')" 
+                    aria-pressed="false" aria-describedby="workflows-desc">
+                🎮 Workflows
+            </button>
+            <button class="nav-button" onclick="showSection('examples')" 
+                    aria-pressed="false" aria-describedby="examples-desc">
+                💡 Examples
+            </button>
+            <button class="nav-button" onclick="showSection('tools')" 
+                    aria-pressed="false" aria-describedby="tools-desc">
+                🛠️ Tools
+            </button>
+            <button class="nav-button" onclick="showSection('troubleshooting')" 
+                    aria-pressed="false" aria-describedby="troubleshooting-desc">
+                🔧 Troubleshooting
+            </button>
+        </nav>
+
+        <!-- Screen reader descriptions for navigation -->
+        <div class="sr-only">
+            <div id="overview-desc">Learn what Claude Hive Swarm is and how it transforms Claude Code</div>
+            <div id="setup-desc">Complete installation and setup instructions</div>
+            <div id="workflows-desc">Example workflows and use cases</div>
+            <div id="examples-desc">Interactive examples you can try</div>
+            <div id="tools-desc">Available tools and their documentation</div>
+            <div id="troubleshooting-desc">Common issues and solutions</div>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="section active">
+            <h2><span class="emoji">📋</span>What is Claude Hive Swarm?</h2>
+            
+            <div class="success">
+                <strong>🎯 Your Goal:</strong> Transform Claude Code into a collective intelligence system where 300+ AI agents work together on your coding tasks.
+            </div>
+            
+            <h3>🔄 Before vs After</h3>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>❌ Before (Standard Claude)</h4>
+                    <ul>
+                        <li>Single AI assistant</li>
+                        <li>Limited to one perspective</li>
+                        <li>No persistent memory</li>
+                        <li>Individual problem-solving</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>✅ After (Claude Hive Swarm)</h4>
+                    <ul>
+                        <li>300+ specialized AI agents</li>
+                        <li>Collective intelligence & decisions</li>
+                        <li>Persistent learning memory</li>
+                        <li>Coordinated multi-agent solutions</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3>🎭 What You Get</h3>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🐛 Swarm Coordination</h4>
+                    <p>Multiple agents working together like a coordinated swarm:</p>
+                    <ul>
+                        <li><strong>Hierarchical:</strong> Queen-led coordination</li>
+                        <li><strong>Mesh:</strong> Peer-to-peer collaboration</li>
+                        <li><strong>Collective:</strong> Hive-mind intelligence</li>
+                        <li><strong>Adaptive:</strong> Dynamic topology selection</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🧠 Hive Intelligence</h4>
+                    <p>Collective decision-making and persistent memory:</p>
+                    <ul>
+                        <li><strong>Democratic Decisions:</strong> Multiple agents vote</li>
+                        <li><strong>Collective Memory:</strong> Shared knowledge base</li>
+                        <li><strong>Emergent Patterns:</strong> Learning from interactions</li>
+                        <li><strong>Cross-session Learning:</strong> Memory persists</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🤝 Hybrid Coordination</h4>
+                    <p>Best of both worlds - strategic planning + execution:</p>
+                    <ul>
+                        <li><strong>Phase 1:</strong> Hive strategic planning</li>
+                        <li><strong>Phase 2:</strong> Swarm coordinated execution</li>
+                        <li><strong>Phase 3:</strong> Hive validation & learning</li>
+                        <li><strong>Adaptive:</strong> Switches modes automatically</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="interactive-example">
+                <h4>🎯 Your Simple Workflow</h4>
+                <div class="terminal">
+                    <div class="terminal-prompt">$ claude --dangerously-skip-permissions hive swarm</div>
+                    <div class="terminal-output">🧠🐛 Starting Claude Code with full collective intelligence...</div>
+                    <div class="terminal-output">✅ 300+ agents loaded and ready for coordination</div>
+                    <div class="terminal-output">🚀 Claude Code launched with swarm-hive capabilities</div>
+                </div>
+                <p><strong>Then in Claude Code:</strong> "Create a development swarm and help me build a secure API"</p>
+                <p><strong>Result:</strong> Multiple expert agents coordinate to give you comprehensive solutions!</p>
+            </div>
+        </div>
+
+        <!-- Setup Section -->
+        <div id="setup" class="section">
+            <h2><span class="emoji">🚀</span>Complete Setup Guide</h2>
+            
+            <div class="warning">
+                <strong>📋 Prerequisites:</strong> Make sure you have Claude Code installed first!
+            </div>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Clone the Repository</strong>
+                <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>git clone https://github.com/CVO-TreeAi/AgentNativeFramework.git
+cd AgentNativeFramework</div>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Install Dependencies</strong>
+                <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Install Python dependencies
+pip3 install structlog prometheus_client pyyaml numpy
+
+# Verify installation
+python3 -c "import structlog, yaml, numpy; print('✅ Dependencies installed')"</div>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Install Claude Hive Swarm</strong>
+                <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Run the installation script
+./scripts/install-claude-hive-swarm.sh
+
+# This will:
+# ✅ Add enhanced 'claude' command to your PATH
+# ✅ Configure MCP integration
+# ✅ Set up swarm-hive coordination
+# ✅ Create desktop shortcuts (macOS)</div>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Test Installation</strong>
+                <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Restart terminal or reload shell
+source ~/.bashrc  # or ~/.zshrc
+
+# Test the enhanced claude command
+claude help
+
+# Should show swarm-hive integration options</div>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>First Launch</strong>
+                <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Launch Claude Code with collective intelligence
+claude --dangerously-skip-permissions hive swarm</div>
+                
+                <div class="success">
+                    <strong>🎉 Success!</strong> Claude Code should open with swarm-hive integration active. You'll see confirmation messages about the collective intelligence system being loaded.
+                </div>
+            </div>
+            
+            <h3>🔧 Manual Setup (Alternative)</h3>
+            
+            <button class="collapsible">Click here for manual setup instructions</button>
+            <div class="collapsible-content">
+                <div class="step">
+                    <strong>Manual PATH Setup</strong>
+                    <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Add to your shell config (.bashrc, .zshrc, etc.)
+echo 'export PATH="/path/to/AgentNativeFramework/bin:$PATH"' >> ~/.bashrc
+
+# Reload shell
+source ~/.bashrc</div>
+                </div>
+                
+                <div class="step">
+                    <strong>Manual MCP Configuration</strong>
+                    <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "mcpServers": {
+    "swarm-hive": {
+      "command": "python3",
+      "args": ["/path/to/AgentNativeFramework/mcp_server/swarm_hive_mcp.py"],
+      "env": {}
+    }
+  }
+}</div>
+                    <p>Save this to <code>~/.claude/mcp.json</code></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflows Section -->
+        <div id="workflows" class="section">
+            <h2><span class="emoji">🎮</span>Example Workflows</h2>
+            
+            <h3>🚀 Workflow 1: Full-Stack Development</h3>
+            
+            <div class="interactive-example">
+                <h4>Scenario: Building an E-commerce API</h4>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Launch with Collective Intelligence</strong>
+                    <div class="terminal">
+                        <div class="terminal-prompt">$ claude --dangerously-skip-permissions hive swarm</div>
+                        <div class="terminal-output">🧠🐛 Starting collective intelligence...</div>
+                        <div class="terminal-output">✅ Claude Code launched with 300+ agents</div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>In Claude Code, Request Coordination</strong>
+                    <div class="code-block" data-lang="prompt">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>Create a development swarm and help me build a secure e-commerce API with:
+- User authentication and authorization  
+- Product catalog management
+- Shopping cart functionality
+- Payment processing integration
+- Performance optimization
+- Security best practices</div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Claude Coordinates Multiple Agents</strong>
+                    <p>Claude will automatically use these tools:</p>
+                    
+                    <div class="tool-demo">
+                        <h4>🐛 swarm_create</h4>
+                        <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "swarm_id": "ecommerce-dev-team",
+  "topology": "hierarchical",
+  "agents": [
+    "backend-typescript-architect",
+    "security-auditor", 
+    "database-expert",
+    "performance-optimizer",
+    "api-designer"
+  ],
+  "task_description": "E-commerce API development"
+}</div>
+                    </div>
+                    
+                    <div class="tool-demo">
+                        <h4>🤝 collaborate</h4>
+                        <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "task_description": "Build secure e-commerce API with all requirements",
+  "agents": ["backend-typescript-architect", "security-auditor", "database-expert"],
+  "coordination_mode": "swarm_hive_hybrid",
+  "complexity": 0.9
+}</div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Get Coordinated Solution</strong>
+                    <div class="success">
+                        You receive a comprehensive solution coordinated across multiple expert agents:
+                        <ul>
+                            <li>🏗️ Backend architect designs the API structure</li>
+                            <li>🔒 Security auditor ensures secure implementation</li>
+                            <li>💾 Database expert optimizes data models</li>
+                            <li>⚡ Performance optimizer ensures scalability</li>
+                            <li>📋 All solutions integrated into one coherent plan</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>🧠 Workflow 2: Strategic Decision Making</h3>
+            
+            <div class="interactive-example">
+                <h4>Scenario: Architecture Decision</h4>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Launch Hive Intelligence</strong>
+                    <div class="terminal">
+                        <div class="terminal-prompt">$ claude --dangerously-skip-permissions hive</div>
+                        <div class="terminal-output">🧠 Starting hive intelligence...</div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Ask for Collective Decision</strong>
+                    <div class="code-block" data-lang="prompt">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>I'm building a real-time chat application that needs to handle 100k+ concurrent users. 
+
+Use collective intelligence to decide: What's the best architecture approach?
+
+Options:
+1. WebSocket-based monolith with Redis
+2. Microservices with message queues  
+3. Serverless with WebSocket API Gateway
+4. Event-driven architecture with CQRS
+
+I need input from architecture, performance, and scalability experts.</div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Hive Collective Decision</strong>
+                    <div class="tool-demo">
+                        <h4>🗳️ hive_decide</h4>
+                        <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "question": "Best architecture for 100k+ concurrent chat app?",
+  "options": [
+    "WebSocket monolith + Redis",
+    "Microservices + message queues", 
+    "Serverless + WebSocket Gateway",
+    "Event-driven + CQRS"
+  ],
+  "agents": [
+    "backend-architect",
+    "performance-optimizer", 
+    "scalability-expert",
+    "real-time-specialist"
+  ],
+  "method": "consensus"
+}</div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Store Decision in Collective Memory</strong>
+                    <div class="tool-demo">
+                        <h4>💾 hive_remember</h4>
+                        <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "content": "For 100k+ concurrent chat: Event-driven architecture with CQRS provides best scalability, use WebSocket Gateway with Redis for real-time, implement message queues for reliability",
+  "memory_type": "semantic",
+  "contributors": ["backend-architect", "performance-optimizer"],
+  "confidence": 0.95
+}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>⚡ Workflow 3: Quick Code Optimization</h3>
+            
+            <div class="interactive-example">
+                <h4>Scenario: Performance Issues</h4>
+                
+                <div class="terminal">
+                    <div class="terminal-prompt">$ claude --dangerously-skip-permissions swarm</div>
+                    <div class="terminal-output">🐛 Starting swarm coordination...</div>
+                </div>
+                
+                <div class="code-block" data-lang="prompt">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>My React app is slow. Create a performance optimization swarm and help me:
+
+1. Identify performance bottlenecks
+2. Optimize component rendering  
+3. Improve bundle size
+4. Add performance monitoring
+
+Here's my problematic component: [paste your code]</div>
+                
+                <p><strong>Result:</strong> Parallel analysis from React expert, performance optimizer, and monitoring specialist!</p>
+            </div>
+        </div>
+
+        <!-- Examples Section -->
+        <div id="examples" class="section">
+            <h2><span class="emoji">💡</span>Interactive Examples</h2>
+            
+            <div class="warning">
+                <strong>💡 Try These:</strong> Copy and paste these examples directly into Claude Code after running <code>claude hive swarm</code>
+            </div>
+            
+            <h3>🔥 Example 1: Multi-Agent Code Review</h3>
+            
+            <div class="interactive-example">
+                <h4>Prompt for Claude Code:</h4>
+                <div class="code-block" data-lang="prompt">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>Create a code review swarm with security, performance, and senior review experts.
+
+Review this TypeScript function and provide coordinated feedback:
+
+```typescript
+async function processUserData(userData: any) {
+  const result = await fetch('/api/process', {
+    method: 'POST',
+    body: JSON.stringify(userData)
+  });
+  return result.json();
+}
+```
+
+I want input on:
+- Security vulnerabilities
+- Performance optimizations  
+- Code quality improvements
+- Error handling best practices</div>
+                
+                <button class="try-button" onclick="showExpectedResult('review-result')">Show Expected Result</button>
+                
+                <div id="review-result" class="collapsible-content">
+                    <div class="success">
+                        <strong>Coordinated Multi-Agent Response:</strong>
+                        <ul>
+                            <li>🔒 <strong>Security Expert:</strong> Add input validation, sanitize userData, implement rate limiting</li>
+                            <li>⚡ <strong>Performance Expert:</strong> Add request timeout, implement retry logic, cache responses</li>
+                            <li>👨‍💻 <strong>Senior Reviewer:</strong> Add proper TypeScript types, error boundaries, logging</li>
+                            <li>🛡️ <strong>Integration:</strong> Complete secure, performant, maintainable solution</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>🎯 Example 2: Architecture Decision</h3>
+            
+            <div class="interactive-example">
+                <h4>Prompt for Claude Code:</h4>
+                <div class="code-block" data-lang="prompt">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>I need to make a critical architecture decision using collective intelligence.
+
+Question: What's the best state management approach for a large React application?
+
+Use hive decision-making with these options:
+1. Redux Toolkit with RTK Query
+2. Zustand with React Query  
+3. Jotai with SWR
+4. Context API with useReducer
+
+Get input from React experts, performance specialists, and senior architects.</div>
+                
+                <button class="try-button" onclick="showExpectedResult('decision-result')">Show Expected Result</button>
+                
+                <div id="decision-result" class="collapsible-content">
+                    <div class="success">
+                        <strong>Collective Decision Process:</strong>
+                        <ol>
+                            <li>🧠 Hive nodes initialized for React, performance, and architecture experts</li>
+                            <li>🗳️ Democratic voting process with expertise weighting</li>
+                            <li>📊 Consensus reached with confidence scoring</li>
+                            <li>💾 Decision stored in collective memory for future reference</li>
+                            <li>📋 Detailed reasoning from multiple perspectives provided</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>🔬 Example 3: Research & Learning</h3>
+            
+            <div class="interactive-example">
+                <h4>Prompt for Claude Code:</h4>
+                <div class="code-block" data-lang="prompt">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>Research the latest AI safety practices for production deployment.
+
+Store the findings in collective memory so the entire team can access this knowledge.
+
+Focus areas:
+- Model security and robustness
+- Data privacy and protection  
+- Bias detection and mitigation
+- Monitoring and observability
+- Incident response procedures
+
+Use academic researchers, AI engineers, and security experts for comprehensive coverage.</div>
+                
+                <button class="try-button" onclick="showExpectedResult('research-result')">Show Expected Result</button>
+                
+                <div id="research-result" class="collapsible-content">
+                    <div class="success">
+                        <strong>Collective Research Process:</strong>
+                        <ul>
+                            <li>🔬 Multiple research agents gather comprehensive information</li>
+                            <li>🧠 Collective synthesis of findings across all focus areas</li>
+                            <li>💾 Knowledge stored in semantic memory for team access</li>
+                            <li>📚 Cross-referenced with existing collective knowledge</li>
+                            <li>🎯 Actionable recommendations with implementation guidance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>🎨 Example 4: Creative Problem Solving</h3>
+            
+            <div class="interactive-example">
+                <h4>Complex Multi-Phase Project:</h4>
+                <div class="code-block" data-lang="prompt">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>I need to build a TreeAI mobile application with these complex requirements:
+
+🌲 Core Features:
+- AI-powered tree health analysis using computer vision
+- Offline-first architecture for field work
+- Real-time data sync when online  
+- GPS mapping integration
+- Business workflow automation
+
+🎯 Technical Requirements:
+- Native iOS app with SwiftUI
+- Claude API integration for AI analysis
+- Local Core ML models for offline analysis
+- Secure cloud backend with auto-scaling
+- Enterprise-grade security
+
+Use hybrid swarm-hive coordination to plan and execute this project.
+Create specialized teams for different aspects and coordinate their work.</div>
+                
+                <button class="try-button" onclick="showExpectedResult('complex-result')">Show Expected Result</button>
+                
+                <div id="complex-result" class="collapsible-content">
+                    <div class="success">
+                        <strong>Hybrid Coordination Process:</strong>
+                        <br><br>
+                        <strong>Phase 1 - Hive Strategic Planning:</strong>
+                        <ul>
+                            <li>🧠 Collective intelligence analyzes requirements</li>
+                            <li>🗳️ Democratic decisions on architecture approaches</li>
+                            <li>📋 Strategic plan with coordinated task breakdown</li>
+                        </ul>
+                        <br>
+                        <strong>Phase 2 - Swarm Execution:</strong>
+                        <ul>
+                            <li>📱 iOS team: SwiftUI app with Core ML integration</li>
+                            <li>🧠 AI team: Claude API integration and model optimization</li>
+                            <li>🏗️ Backend team: Scalable cloud infrastructure</li>
+                            <li>🔒 Security team: Enterprise security implementation</li>
+                        </ul>
+                        <br>
+                        <strong>Phase 3 - Hive Validation:</strong>
+                        <ul>
+                            <li>🔍 Collective review of all components</li>
+                            <li>📊 Integration testing and validation</li>
+                            <li>💾 Learning stored in collective memory</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Section -->
+        <div id="tools" class="section">
+            <h2><span class="emoji">🛠️</span>Available Tools in Claude Code</h2>
+            
+            <p>When you run <code>claude hive swarm</code>, Claude Code gains access to these powerful coordination tools:</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🐛 Swarm Tools</h4>
+                    <ul>
+                        <li><strong>swarm_create</strong> - Create agent swarms</li>
+                        <li><strong>swarm_coordinate</strong> - Execute swarm tasks</li>
+                        <li><strong>get_swarm_status</strong> - Monitor coordination</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🧠 Hive Tools</h4>
+                    <ul>
+                        <li><strong>hive_decide</strong> - Collective decisions</li>
+                        <li><strong>hive_remember</strong> - Store knowledge</li>
+                        <li><strong>hive_recall</strong> - Retrieve knowledge</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>🤝 Collaboration Tools</h4>
+                    <ul>
+                        <li><strong>collaborate</strong> - Multi-agent coordination</li>
+                        <li><strong>list_agents</strong> - See available agents</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3>🔧 Tool Details</h3>
+            
+            <button class="collapsible">🐛 swarm_create - Create Agent Swarms</button>
+            <div class="collapsible-content">
+                <div class="tool-demo">
+                    <strong>Purpose:</strong> Create a coordinated group of AI agents
+                    <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "swarm_id": "your-team-name",
+  "topology": "hierarchical|mesh|collective|adaptive",
+  "agents": ["agent1", "agent2", "agent3"],
+  "task_description": "What this swarm will work on"
+}</div>
+                    
+                    <strong>Topologies:</strong>
+                    <ul>
+                        <li><strong>hierarchical:</strong> Clear leadership structure (best for complex projects)</li>
+                        <li><strong>mesh:</strong> Peer-to-peer coordination (best for parallel tasks)</li>
+                        <li><strong>collective:</strong> Hive-mind intelligence (best for creative solutions)</li>
+                        <li><strong>adaptive:</strong> Auto-selects optimal topology</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="collapsible">🧠 hive_decide - Collective Decision Making</button>
+            <div class="collapsible-content">
+                <div class="tool-demo">
+                    <strong>Purpose:</strong> Get collective wisdom from multiple expert agents
+                    <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "question": "Your decision question?",
+  "options": ["Option 1", "Option 2", "Option 3"],
+  "agents": ["expert1", "expert2", "expert3"],
+  "method": "consensus|weighted_voting|quorum|emergent",
+  "timeout": 300
+}</div>
+                    
+                    <strong>Methods:</strong>
+                    <ul>
+                        <li><strong>consensus:</strong> 75% agreement required</li>
+                        <li><strong>weighted_voting:</strong> Based on agent expertise</li>
+                        <li><strong>quorum:</strong> Minimum participation threshold</li>
+                        <li><strong>emergent:</strong> Let natural patterns emerge</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="collapsible">💾 hive_remember - Store Collective Knowledge</button>
+            <div class="collapsible-content">
+                <div class="tool-demo">
+                    <strong>Purpose:</strong> Build persistent collective intelligence
+                    <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "content": "Knowledge to store for the collective",
+  "memory_type": "working|episodic|semantic|collective",
+  "contributors": ["agent1", "agent2"],
+  "confidence": 0.9
+}</div>
+                    
+                    <strong>Memory Types:</strong>
+                    <ul>
+                        <li><strong>working:</strong> Short-term (4 hours) - current task info</li>
+                        <li><strong>episodic:</strong> Medium-term (30 days) - project experiences</li>
+                        <li><strong>semantic:</strong> Long-term (90 days) - knowledge & facts</li>
+                        <li><strong>collective:</strong> Permanent (1 year) - organizational wisdom</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="collapsible">🔍 hive_recall - Retrieve Collective Knowledge</button>
+            <div class="collapsible-content">
+                <div class="tool-demo">
+                    <strong>Purpose:</strong> Access previously stored collective intelligence
+                    <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "query": "What you're looking for",
+  "memory_type": "semantic",
+  "min_confidence": 0.7,
+  "limit": 10
+}</div>
+                    
+                    <strong>Search Tips:</strong>
+                    <ul>
+                        <li>Use specific keywords for better results</li>
+                        <li>Lower confidence threshold finds more results</li>
+                        <li>Different memory types for different kinds of knowledge</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="collapsible">🤝 collaborate - Multi-Agent Coordination</button>
+            <div class="collapsible-content">
+                <div class="tool-demo">
+                    <strong>Purpose:</strong> Coordinate multiple agents on complex tasks
+                    <div class="code-block" data-lang="json">
+<button class="copy-button" onclick="copyCode(this)">Copy</button>{
+  "task_description": "What you want to accomplish",
+  "agents": ["relevant", "expert", "agents"],
+  "coordination_mode": "swarm_hive_hybrid",
+  "complexity": 0.8,
+  "time_critical": false
+}</div>
+                    
+                    <strong>Coordination Modes:</strong>
+                    <ul>
+                        <li><strong>swarm_only:</strong> Fast parallel execution</li>
+                        <li><strong>hive_only:</strong> Deep collective intelligence</li>
+                        <li><strong>swarm_hive_hybrid:</strong> Strategic planning + execution</li>
+                        <li><strong>adaptive_selection:</strong> Auto-choose optimal mode</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting Section -->
+        <div id="troubleshooting" class="section">
+            <h2><span class="emoji">🔧</span>Troubleshooting & FAQ</h2>
+            
+            <h3>🚨 Common Issues</h3>
+            
+            <button class="collapsible">❌ "Command not found: claude"</button>
+            <div class="collapsible-content">
+                <div class="error">
+                    <strong>Problem:</strong> Claude Code is not installed or not in PATH
+                </div>
+                <div class="step">
+                    <strong>Solution:</strong>
+                    <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Install Claude Code first
+npm install -g @anthropic/claude-code
+
+# Or download from https://claude.ai/code
+
+# Then verify
+which claude</div>
+                </div>
+            </div>
+            
+            <button class="collapsible">❌ "Integration not found"</button>
+            <div class="collapsible-content">
+                <div class="error">
+                    <strong>Problem:</strong> Swarm-hive integration not properly installed
+                </div>
+                <div class="step">
+                    <strong>Solution:</strong>
+                    <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Reinstall the integration
+./scripts/install-claude-hive-swarm.sh
+
+# Start the services
+./scripts/start-swarm-hive.sh start
+
+# Test the command
+claude help</div>
+                </div>
+            </div>
+            
+            <button class="collapsible">❌ "Python dependencies not available"</button>
+            <div class="collapsible-content">
+                <div class="error">
+                    <strong>Problem:</strong> Required Python packages not installed
+                </div>
+                <div class="step">
+                    <strong>Solution:</strong>
+                    <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Install dependencies
+pip3 install structlog prometheus_client pyyaml numpy
+
+# Verify installation
+python3 -c "import structlog, yaml, numpy; print('✅ All good!')"</div>
+                </div>
+            </div>
+            
+            <button class="collapsible">❌ "MCP server not responding"</button>
+            <div class="collapsible-content">
+                <div class="error">
+                    <strong>Problem:</strong> MCP server connection issues
+                </div>
+                <div class="step">
+                    <strong>Solution:</strong>
+                    <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Restart the integration
+./scripts/start-swarm-hive.sh restart
+
+# Check logs
+./scripts/start-swarm-hive.sh logs
+
+# Test connection
+./scripts/start-swarm-hive.sh test</div>
+                </div>
+            </div>
+            
+            <h3>❓ Frequently Asked Questions</h3>
+            
+            <button class="collapsible">💡 How is this different from regular Claude Code?</button>
+            <div class="collapsible-content">
+                <p><strong>Regular Claude Code:</strong> Single AI assistant</p>
+                <p><strong>Claude Hive Swarm:</strong> 300+ specialized agents working together with:</p>
+                <ul>
+                    <li>🐛 Swarm coordination for parallel task execution</li>
+                    <li>🧠 Hive intelligence for collective decision-making</li>
+                    <li>💾 Persistent memory that learns across sessions</li>
+                    <li>🤝 Multi-agent collaboration on complex problems</li>
+                </ul>
+            </div>
+            
+            <button class="collapsible">💡 What agents are available?</button>
+            <div class="collapsible-content">
+                <p><strong>Development:</strong> backend-typescript-architect, rust-pro, react-expert, ios-developer, fullstack-developer</p>
+                <p><strong>Security:</strong> security-auditor, penetration-tester, compliance-expert</p>
+                <p><strong>Performance:</strong> performance-optimizer, database-expert, monitoring-specialist</p>
+                <p><strong>AI/ML:</strong> ai-engineer, ml-specialist, data-scientist</p>
+                <p><strong>Research:</strong> academic-researcher, technical-researcher, innovation-specialist</p>
+                <p><strong>+ 280+ more specialists across all domains!</strong></p>
+            </div>
+            
+            <button class="collapsible">💡 When should I use different coordination modes?</button>
+            <div class="collapsible-content">
+                <ul>
+                    <li><strong>claude hive swarm</strong> - Complex projects, full-stack development, strategic + execution</li>
+                    <li><strong>claude hive</strong> - Architecture decisions, research, knowledge building</li>
+                    <li><strong>claude swarm</strong> - Implementation tasks, code reviews, optimization</li>
+                    <li><strong>claude</strong> - Simple questions, quick tasks, single-agent work</li>
+                </ul>
+            </div>
+            
+            <button class="collapsible">💡 How does the collective memory work?</button>
+            <div class="collapsible-content">
+                <p>Every interaction builds collective intelligence:</p>
+                <ul>
+                    <li>🧠 <strong>Automatic Learning:</strong> Solutions and insights are stored</li>
+                    <li>📚 <strong>Cross-Session Memory:</strong> Knowledge persists between Claude sessions</li>
+                    <li>🔍 <strong>Intelligent Retrieval:</strong> Relevant knowledge surfaces automatically</li>
+                    <li>⏰ <strong>Smart Decay:</strong> Old information fades, important knowledge stays</li>
+                </ul>
+            </div>
+            
+            <h3>🛟 Emergency Commands</h3>
+            
+            <div class="step">
+                <strong>If something goes wrong:</strong>
+                <div class="code-block" data-lang="bash">
+<button class="copy-button" onclick="copyCode(this)">Copy</button># Stop everything
+./scripts/start-swarm-hive.sh stop
+
+# Clean restart
+./scripts/start-swarm-hive.sh restart
+
+# Fallback to regular Claude
+claude --dangerously-skip-permissions</div>
+            </div>
+        </div>
+
+        <!-- Enhanced Progress Tracking -->
+        <div class="progress-container" role="complementary" aria-label="Guide progress tracker">
+            <div class="progress-header">
+                <span>📊 Guide Progress</span>
+            </div>
+            <div class="progress-steps" aria-label="Section progress indicators">
+                <div class="progress-step completed" aria-label="Overview completed"></div>
+                <div class="progress-step" aria-label="Setup pending"></div>
+                <div class="progress-step" aria-label="Workflows pending"></div>
+                <div class="progress-step" aria-label="Examples pending"></div>
+                <div class="progress-step" aria-label="Tools pending"></div>
+                <div class="progress-step" aria-label="Troubleshooting pending"></div>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progress-text">Get started above ↑</span>
+                <span class="progress-percentage" id="progress-percentage">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced app state
+        const AppState = {
+            currentSection: 'overview',
+            sections: ['overview', 'setup', 'workflows', 'examples', 'tools', 'troubleshooting'],
+            completedSections: new Set(['overview']),
+            particles: [],
+            reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        };
+
+        // Particle system for swarm visualization
+        class ParticleSystem {
+            constructor() {
+                this.container = document.querySelector('.particles');
+                this.particles = [];
+                this.maxParticles = window.innerWidth < 768 ? 20 : 50;
+                
+                if (!AppState.reducedMotion) {
+                    this.init();
+                }
+            }
+
+            init() {
+                for (let i = 0; i < this.maxParticles; i++) {
+                    this.createParticle();
+                }
+            }
+
+            createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random starting position
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = '100vh';
+                
+                // Random animation delay and duration
+                const delay = Math.random() * 20;
+                const duration = 20 + Math.random() * 10;
+                
+                particle.style.animationDelay = `-${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                this.container.appendChild(particle);
+                this.particles.push(particle);
+
+                // Remove and recreate particle after animation
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                        if (!AppState.reducedMotion) {
+                            this.createParticle();
+                        }
+                    }
+                }, duration * 1000);
+            }
+        }
+
+        // Enhanced section navigation with accessibility
+        function showSection(sectionId) {
+            const previousSection = AppState.currentSection;
+            AppState.currentSection = sectionId;
+            AppState.completedSections.add(previousSection);
+            
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+                section.setAttribute('aria-hidden', 'true');
+            });
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+                button.setAttribute('aria-pressed', 'false');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            targetSection.classList.add('active');
+            targetSection.setAttribute('aria-hidden', 'false');
+            targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Activate corresponding nav button
+            const activeButton = event.target;
+            activeButton.classList.add('active');
+            activeButton.setAttribute('aria-pressed', 'true');
+            
+            // Update progress
+            updateProgress(sectionId);
+            
+            // Announce section change to screen readers
+            announceToScreenReader(`Navigated to ${sectionId} section`);
+        }
+
+        // Enhanced progress tracking
+        function updateProgress(section) {
+            const currentIndex = AppState.sections.indexOf(section);
+            const progress = ((currentIndex + 1) / AppState.sections.length) * 100;
+            
+            // Update progress bar
+            const progressFill = document.getElementById('progress-fill');
+            const progressBar = progressFill.parentElement;
+            progressFill.style.width = progress + '%';
+            progressBar.setAttribute('aria-valuenow', Math.round(progress));
+            
+            // Update progress steps
+            const steps = document.querySelectorAll('.progress-step');
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentIndex) {
+                    step.classList.add('completed');
+                    step.setAttribute('aria-label', `${AppState.sections[index]} completed`);
+                } else if (index === currentIndex) {
+                    step.classList.add('active');
+                    step.setAttribute('aria-label', `${AppState.sections[index]} current`);
+                } else {
+                    step.setAttribute('aria-label', `${AppState.sections[index]} pending`);
+                }
+            });
+            
+            // Update progress text
+            const messages = {
+                overview: 'Understanding the concept',
+                setup: 'Setting up the system', 
+                workflows: 'Learning workflows',
+                examples: 'Exploring examples',
+                tools: 'Mastering the tools',
+                troubleshooting: 'Ready to troubleshoot!'
+            };
+            
+            document.getElementById('progress-text').textContent = messages[section] || 'Exploring...';
+            document.getElementById('progress-percentage').textContent = Math.round(progress) + '%';
+        }
+
+        // Enhanced copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.parentElement;
+            let code = codeBlock.textContent.replace('Copy', '').replace('COPY', '').trim();
+            
+            // Remove the language tag
+            const langMatch = code.match(/^[A-Z]+\s*/);
+            if (langMatch) {
+                code = code.substring(langMatch[0].length);
+            }
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                announceToScreenReader('Code copied to clipboard');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                // Fallback for browsers that don't support clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                announceToScreenReader('Code copied to clipboard');
+            });
+        }
+
+        // Code execution simulation
+        function simulateCodeExecution(button, outputElement) {
+            const loadingStates = ['⏳ Initializing...', '🔄 Processing...', '✨ Generating result...'];
+            let currentState = 0;
+            
+            button.disabled = true;
+            button.textContent = 'Running...';
+            
+            const interval = setInterval(() => {
+                outputElement.textContent = loadingStates[currentState];
+                currentState++;
+                
+                if (currentState >= loadingStates.length) {
+                    clearInterval(interval);
+                    outputElement.textContent = '✅ Execution completed successfully!\n\nResult: Claude Hive Swarm is now active with 300+ agents ready for coordination.';
+                    button.disabled = false;
+                    button.textContent = 'Run Demo';
+                    announceToScreenReader('Code execution simulation completed');
+                }
+            }, 1000);
+        }
+
+        // Screen reader announcements
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            
+            document.body.appendChild(announcement);
+            setTimeout(() => document.body.removeChild(announcement), 1000);
+        }
+
+        // Enhanced collapsible functionality
+        function initCollapsibles() {
+            const collapsibles = document.querySelectorAll('.collapsible');
+            
+            collapsibles.forEach(collapsible => {
+                // Add ARIA attributes
+                collapsible.setAttribute('aria-expanded', 'false');
+                collapsible.setAttribute('role', 'button');
+                const content = collapsible.nextElementSibling;
+                const id = 'collapsible-' + Math.random().toString(36).substr(2, 9);
+                content.id = id;
+                collapsible.setAttribute('aria-controls', id);
+                
+                collapsible.addEventListener('click', function() {
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    
+                    this.classList.toggle('active');
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    content.classList.toggle('active');
+                    
+                    announceToScreenReader(isExpanded ? 'Section collapsed' : 'Section expanded');
+                });
+
+                // Keyboard support
+                collapsible.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+        }
+
+        // Show expected results
+        function showExpectedResult(resultId) {
+            const element = document.getElementById(resultId);
+            element.classList.toggle('active');
+            
+            const isVisible = element.classList.contains('active');
+            announceToScreenReader(isVisible ? 'Expected result shown' : 'Expected result hidden');
+        }
+
+        // Keyboard navigation
+        function initKeyboardNavigation() {
+            document.addEventListener('keydown', function(e) {
+                // Alt + Arrow keys for section navigation
+                if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+                    e.preventDefault();
+                    const currentIndex = AppState.sections.indexOf(AppState.currentSection);
+                    
+                    if (e.key === 'ArrowRight' && currentIndex < AppState.sections.length - 1) {
+                        const nextButton = document.querySelector(`[onclick="showSection('${AppState.sections[currentIndex + 1]}')"]`);
+                        nextButton.click();
+                    } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                        const prevButton = document.querySelector(`[onclick="showSection('${AppState.sections[currentIndex - 1]}')"]`);
+                        prevButton.click();
+                    }
+                }
+
+                // Escape key to close any modals or expanded content
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.collapsible.active').forEach(collapsible => {
+                        collapsible.click();
+                    });
+                }
+            });
+        }
+
+        // Theme detection and management
+        function initThemeManagement() {
+            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (prefersDarkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+
+            // Listen for theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            });
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all systems
+            if (!AppState.reducedMotion) {
+                new ParticleSystem();
+            }
+            
+            initCollapsibles();
+            initKeyboardNavigation();
+            initThemeManagement();
+            updateProgress('overview');
+            
+            // Add keyboard navigation hint
+            const hint = document.createElement('div');
+            hint.innerHTML = '💡 Use Alt + ← → to navigate sections';
+            hint.style.cssText = `
+                position: fixed;
+                top: var(--space-xl);
+                right: var(--space-xl);
+                background: var(--bg-card);
+                backdrop-filter: blur(10px);
+                color: var(--text-tertiary);
+                padding: var(--space-sm) var(--space-md);
+                border-radius: var(--radius-md);
+                font-size: var(--font-size-xs);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                opacity: 0.8;
+                z-index: 999;
+            `;
+            
+            if (window.innerWidth > 768) {
+                document.body.appendChild(hint);
+                
+                // Hide hint after 5 seconds
+                setTimeout(() => {
+                    hint.style.opacity = '0';
+                    setTimeout(() => hint.remove(), 300);
+                }, 5000);
+            }
+
+            // Add loading complete announcement
+            announceToScreenReader('Claude Hive Swarm guide loaded and ready to explore');
+        });
+
+        // Handle window resize for particle system
+        window.addEventListener('resize', function() {
+            if (window.innerWidth < 768) {
+                const particles = document.querySelectorAll('.particle');
+                particles.forEach(particle => particle.remove());
+            }
+        });
+
+        // Add performance monitoring
+        if ('performance' in window) {
+            window.addEventListener('load', function() {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                console.log(`Guide loaded in ${loadTime}ms`);
+            });
+        }
+    </script>
+</body>
+</html>
