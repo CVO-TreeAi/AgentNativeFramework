@@ -4,6 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🧠🐛 Agent Native Framework - Collective AI Intelligence</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/public/manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    
+    <!-- iOS PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Claude Hive Swarm">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Transform Claude Code into a collective intelligence system with 300+ AI agents working together through swarm coordination and hive mind capabilities.">
+    <meta name="keywords" content="Claude Code, AI agents, swarm intelligence, collective intelligence, development tools, AI coordination">
+    <meta name="author" content="TreeAI Team">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Claude Hive Swarm - Collective AI Intelligence">
+    <meta property="og:description" content="Transform Claude Code into a swarm coordination powerhouse with 300+ specialized AI agents">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-domain.vercel.app">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Claude Hive Swarm - Collective AI Intelligence">
+    <meta name="twitter:description" content="Command 300+ AI agents working together through swarm intelligence">
     <style>
         * {
             margin: 0;
@@ -368,6 +393,19 @@
         
         // Initialize particles when page loads
         document.addEventListener('DOMContentLoaded', createParticles);
+        
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/public/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
         
         // Add some interactivity to feature cards
         document.querySelectorAll('.feature').forEach(feature => {

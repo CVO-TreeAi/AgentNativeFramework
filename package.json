@@ -1,0 +1,47 @@
+{
+  "name": "agent-native-framework",
+  "version": "1.0.0",
+  "description": "Collective AI Intelligence for Developers - Transform Claude Code into a swarm coordination powerhouse",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 3000",
+    "build": "echo 'Static site - no build needed'",
+    "start": "python3 -m http.server 8080",
+    "deploy": "vercel --prod",
+    "preview": "vercel",
+    "install-hive": "./scripts/install-claude-hive-swarm.sh",
+    "start-hive": "./scripts/start-swarm-hive.sh start",
+    "demo": "./demo_claude_hive_swarm.sh"
+  },
+  "keywords": [
+    "ai",
+    "agents", 
+    "swarm-intelligence",
+    "collective-intelligence",
+    "claude-code",
+    "development-tools",
+    "coordination",
+    "automation"
+  ],
+  "author": "TreeAI Team",
+  "license": "MIT",
+  "homepage": "https://github.com/CVO-TreeAi/AgentNativeFramework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CVO-TreeAi/AgentNativeFramework.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CVO-TreeAi/AgentNativeFramework/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "vercel": {
+    "framework": null,
+    "buildCommand": null,
+    "outputDirectory": null
+  }
+}
