@@ -1,6 +1,7 @@
 """
 AgentNativeFramework - Core Agent Management System
 Orchestrates the 300+ agent ecosystem with democratic coordination
+Enhanced with swarm intelligence and hive mind capabilities
 """
 
 import asyncio
@@ -9,7 +10,11 @@ from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
+import time
 from pathlib import Path
+from prometheus_client import Counter, Histogram, Gauge, Summary, start_http_server
+import structlog
+import yaml
 
 class AgentTier(Enum):
     TIER_1_CORE = "tier_1_core"           # Core framework agents
@@ -53,12 +58,42 @@ class AgentManager:
     Handles agent activation, coordination, and democratic decision-making
     """
     
-    def __init__(self, config_path: Optional[Path] = None):
-        self.logger = logging.getLogger(__name__)
+    # Operational metrics
+    agent_activations = Counter('agent_activations_total', 'Total agent activations', ['agent_id', 'status'])
+    coordination_duration = Histogram('coordination_duration_seconds', 'Time spent coordinating agents')
+    active_agents_gauge = Gauge('active_agents_count', 'Number of currently active agents')
+    decision_latency = Summary('decision_making_duration_seconds', 'Time to reach consensus')
+    error_rate = Counter('agent_errors_total', 'Total agent errors', ['error_type', 'agent_id'])
+    
+    def __init__(self, config_path: Optional[Path] = None, swarm_hive_coordinator=None):
+        # Setup structured logging
+        structlog.configure(
+            processors=[
+                structlog.processors.add_log_level,
+                structlog.processors.TimeStamper(fmt="iso"),
+                structlog.dev.ConsoleRenderer()
+            ],
+            logger_factory=structlog.PrintLoggerFactory(),
+            wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
+            cache_logger_on_first_use=True,
+        )
+        self.logger = structlog.get_logger(__name__)
+        
+        # Start metrics server
+        try:
+            start_http_server(8000)
+            self.logger.info("metrics_server_started", port=8000)
+        except Exception as e:
+            self.logger.warning("metrics_server_failed", error=str(e))
+        
         self.active_agents: Dict[str, AgentConfiguration] = {}
         self.agent_registry: Dict[str, AgentConfiguration] = {}
         self.coordination_patterns: Dict[str, Any] = {}
         self.decision_history: List[Dict[str, Any]] = []
+        
+        # Swarm-Hive integration
+        self.swarm_hive_coordinator = swarm_hive_coordinator
+        self.swarm_hive_config = self.load_swarm_hive_config()
         
         # Load configuration
         if config_path:
@@ -448,6 +483,227 @@ class AgentManager:
             await self.deactivate_agent(agent_id)
         
         self.logger.info("Agent manager shutdown complete")
+    
+    def load_swarm_hive_config(self) -> Dict[str, Any]:
+        """Load swarm-hive configuration"""
+        config_path = Path(__file__).parent.parent.parent / "config" / "swarm_hive_config.yaml"
+        
+        try:
+            if config_path.exists():
+                with open(config_path, 'r') as f:
+                    config = yaml.safe_load(f)
+                self.logger.info("swarm_hive_config_loaded", path=str(config_path))
+                return config
+        except Exception as e:
+            self.logger.warning("swarm_hive_config_load_failed", error=str(e))
+        
+        # Return default configuration
+        return {
+            "swarm_configuration": {"default_topology": "adaptive"},
+            "hive_configuration": {"decision_methods": {"consensus": {"threshold": 0.75}}},
+            "coordination_modes": {"adaptive_selection": {"complexity_range": [0.0, 1.0]}}
+        }
+    
+    async def coordinate_with_swarm_hive(
+        self, 
+        task: Dict[str, Any], 
+        coordination_mode: str = "adaptive_selection"
+    ) -> Dict[str, Any]:
+        """Enhanced coordination using swarm-hive intelligence"""
+        
+        if not self.swarm_hive_coordinator:
+            self.logger.warning("swarm_hive_coordinator_not_available")
+            # Fall back to traditional coordination
+            return await self.coordinate_agents(task, task.get("required_capabilities", []))
+        
+        # Import here to avoid circular imports
+        from ..coordination.swarm_hive_coordinator import CoordinationTask, CoordinationMode
+        
+        # Create coordination task
+        coordination_task = CoordinationTask(
+            task_id=f"agent_mgr_{int(time.time())}",
+            description=task.get("description", "Agent coordination task"),
+            complexity=task.get("complexity", 0.5),
+            required_capabilities=task.get("required_capabilities", []),
+            time_critical=task.get("time_critical", False),
+            coordination_mode=CoordinationMode(coordination_mode) if coordination_mode != "adaptive_selection" else None
+        )
+        
+        # Use swarm-hive coordination
+        result = await self.swarm_hive_coordinator.coordinate_task(coordination_task)
+        
+        # Log the enhanced coordination
+        self.logger.info(
+            "swarm_hive_coordination_completed",
+            task_id=coordination_task.task_id,
+            mode=result.get("coordination_mode"),
+            duration=result.get("duration")
+        )
+        
+        return result
+    
+    def get_swarm_hive_recommendations(self, task_requirements: Dict[str, Any]) -> Dict[str, Any]:
+        """Get recommendations for swarm-hive coordination based on task requirements"""
+        
+        config = self.swarm_hive_config
+        complexity = task_requirements.get("complexity", 0.5)
+        agent_count_needed = len(task_requirements.get("required_capabilities", []))
+        time_critical = task_requirements.get("time_critical", False)
+        
+        recommendations = {}
+        
+        # Recommend coordination mode
+        for mode, mode_config in config.get("coordination_modes", {}).items():
+            complexity_range = mode_config.get("complexity_range", [0, 1])
+            agent_range = mode_config.get("agent_count", [1, 20])
+            
+            if (complexity_range[0] <= complexity <= complexity_range[1] and
+                agent_range[0] <= agent_count_needed <= agent_range[1]):
+                
+                recommendations["coordination_mode"] = mode
+                recommendations["reason"] = mode_config.get("description", "")
+                break
+        
+        # Recommend swarm topology
+        swarm_topologies = config.get("swarm_configuration", {}).get("topologies", {})
+        for topology, topo_config in swarm_topologies.items():
+            complexity_range = topo_config.get("complexity_range", [0, 1])
+            ideal_size = topo_config.get("ideal_size", [1, 20])
+            
+            if (complexity_range[0] <= complexity <= complexity_range[1] and
+                ideal_size[0] <= agent_count_needed <= ideal_size[1] and
+                topo_config.get("time_critical") == time_critical):
+                
+                recommendations["swarm_topology"] = topology
+                break
+        
+        # Recommend hive decision method
+        if complexity > 0.7:
+            recommendations["hive_decision_method"] = "emergent"
+        elif time_critical:
+            recommendations["hive_decision_method"] = "weighted_voting"
+        elif agent_count_needed > 8:
+            recommendations["hive_decision_method"] = "quorum"
+        else:
+            recommendations["hive_decision_method"] = "consensus"
+        
+        return recommendations
+    
+    def suggest_optimal_agents_for_swarm_hive(
+        self, 
+        required_capabilities: List[str],
+        preferred_topology: str = "adaptive"
+    ) -> Dict[str, List[str]]:
+        """Suggest optimal agent composition for swarm-hive coordination"""
+        
+        config = self.swarm_hive_config
+        role_mapping = config.get("agent_role_mapping", {})
+        
+        suggestions = {
+            "queen_candidates": [],
+            "specialists": [],
+            "workers": [],
+            "coordinators": []
+        }
+        
+        # Find suitable agents for each role
+        suitable_agents = self.find_agents_by_capabilities(required_capabilities)
+        
+        # Categorize agents by swarm-hive roles
+        for agent_id in suitable_agents[:12]:  # Limit for performance
+            if agent_id in role_mapping.get("queen_candidates", []):
+                suggestions["queen_candidates"].append(agent_id)
+            
+            # Check if agent matches specialist categories
+            agent_config = self.agent_registry.get(agent_id)
+            if agent_config and agent_config.capabilities:
+                domains = agent_config.capabilities.specialization_domains
+                
+                for domain in domains:
+                    for spec_category, spec_agents in role_mapping.get("specialist_roles", {}).items():
+                        if agent_id in spec_agents:
+                            suggestions["specialists"].append(agent_id)
+                            break
+            
+            # Check coordination capabilities
+            if (agent_config and agent_config.capabilities and 
+                "coordination" in agent_config.capabilities.specialization_domains):
+                suggestions["coordinators"].append(agent_id)
+            
+            # Add to worker pool if not in other categories
+            if (agent_id not in suggestions["queen_candidates"] and
+                agent_id not in suggestions["specialists"] and
+                agent_id not in suggestions["coordinators"]):
+                suggestions["workers"].append(agent_id)
+        
+        # Remove duplicates and limit sizes
+        for role in suggestions:
+            suggestions[role] = list(dict.fromkeys(suggestions[role]))  # Remove duplicates
+            if role == "queen_candidates":
+                suggestions[role] = suggestions[role][:2]  # Max 2 queen candidates
+            elif role == "specialists":
+                suggestions[role] = suggestions[role][:6]  # Max 6 specialists
+            elif role == "coordinators":
+                suggestions[role] = suggestions[role][:3]  # Max 3 coordinators
+            else:
+                suggestions[role] = suggestions[role][:8]  # Max 8 workers
+        
+        return suggestions
+    
+    async def create_specialized_swarm_hive(
+        self,
+        task_type: str,
+        custom_requirements: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """Create specialized swarm-hive for specific task types"""
+        
+        if not self.swarm_hive_coordinator:
+            return {"error": "Swarm-hive coordinator not available"}
+        
+        config = self.swarm_hive_config
+        task_templates = config.get("task_templates", {})
+        
+        if task_type not in task_templates:
+            return {"error": f"Unknown task type: {task_type}"}
+        
+        template = task_templates[task_type]
+        
+        # Merge template with custom requirements
+        requirements = dict(template)
+        if custom_requirements:
+            requirements.update(custom_requirements)
+        
+        # Find agents based on required capabilities
+        agent_capabilities = requirements.get("agent_capabilities", [])
+        suitable_agents = self.find_agents_by_capabilities(agent_capabilities)
+        
+        if not suitable_agents:
+            return {"error": f"No suitable agents found for capabilities: {agent_capabilities}"}
+        
+        # Create persistent swarm-hive
+        swarm_hive_id = f"{task_type}_{int(time.time())}"
+        
+        coordination_config = {
+            "swarm_topology": requirements.get("preferred_topology", "adaptive"),
+            "coordination_mode": requirements.get("coordination_mode", "adaptive_selection"),
+            "task_type": task_type,
+            "template": template
+        }
+        
+        result = await self.swarm_hive_coordinator.create_persistent_swarm_hive(
+            swarm_hive_id,
+            suitable_agents[:10],  # Limit for performance
+            coordination_config
+        )
+        
+        self.logger.info(
+            "specialized_swarm_hive_created",
+            task_type=task_type,
+            swarm_hive_id=swarm_hive_id,
+            agents_used=len(suitable_agents[:10])
+        )
+        
+        return result
 
 # Example usage and testing
 if __name__ == "__main__":

@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-native-framework
+  labels:
+    app: agent-native-framework
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: http
+    protocol: TCP
+    name: http
+  - port: 8000
+    targetPort: metrics
+    protocol: TCP
+    name: metrics
+  selector:
+    app: agent-native-framework
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-native-framework-headless
+  labels:
+    app: agent-native-framework
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 8080
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: agent-native-framework

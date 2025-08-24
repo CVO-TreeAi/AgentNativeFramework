@@ -1,0 +1,211 @@
+# Swarm-Hive Configuration for AgentNativeFramework
+# Configuration for swarm intelligence and hive mind coordination
+
+swarm_configuration:
+  default_topology: "adaptive"
+  max_swarm_size: 12
+  min_swarm_size: 3
+  coordination_timeout: 300
+  
+  topologies:
+    hierarchical:
+      description: "Queen-led coordination with clear hierarchy"
+      ideal_size: [5, 10]
+      complexity_range: [0.6, 1.0]
+      time_critical: false
+      
+    mesh:
+      description: "Peer-to-peer coordination for parallel execution"
+      ideal_size: [3, 8]
+      complexity_range: [0.3, 0.8]
+      time_critical: true
+      
+    collective:
+      description: "Hive-mind collective intelligence"
+      ideal_size: [6, 12]
+      complexity_range: [0.7, 1.0]
+      time_critical: false
+      
+    adaptive:
+      description: "Dynamic topology selection based on task"
+      ideal_size: [3, 10]
+      complexity_range: [0.0, 1.0]
+      time_critical: null
+
+hive_configuration:
+  decision_methods:
+    consensus:
+      description: "Require majority agreement"
+      threshold: 0.75
+      timeout: 180
+      
+    weighted_voting:
+      description: "Weight votes by agent expertise"
+      influence_factor: 0.8
+      timeout: 120
+      
+    quorum:
+      description: "Minimum participation threshold"
+      participation_threshold: 0.6
+      timeout: 240
+      
+    emergent:
+      description: "Let patterns emerge naturally"
+      sensitivity: 0.8
+      timeout: 300
+  
+  memory_configuration:
+    working_memory:
+      retention_hours: 4
+      decay_rate: 0.9
+      
+    episodic_memory:
+      retention_days: 30
+      decay_rate: 0.95
+      
+    semantic_memory:
+      retention_days: 90
+      decay_rate: 0.98
+      
+    collective_memory:
+      retention_days: 365
+      decay_rate: 0.99
+
+coordination_modes:
+  swarm_only:
+    description: "Pure swarm coordination"
+    best_for: ["fast_execution", "parallel_tasks", "clear_hierarchy"]
+    complexity_range: [0.0, 0.7]
+    agent_count: [3, 8]
+    
+  hive_only:
+    description: "Pure hive intelligence"
+    best_for: ["complex_decisions", "collective_wisdom", "learning_tasks"]
+    complexity_range: [0.5, 1.0]
+    agent_count: [5, 15]
+    
+  swarm_hive_hybrid:
+    description: "Combined swarm execution with hive intelligence"
+    best_for: ["strategic_tasks", "multi_phase_projects", "adaptive_solutions"]
+    complexity_range: [0.6, 1.0]
+    agent_count: [6, 12]
+    
+  adaptive_selection:
+    description: "Auto-select optimal coordination mode"
+    best_for: ["unknown_requirements", "varying_complexity", "learning_systems"]
+    complexity_range: [0.0, 1.0]
+    agent_count: [3, 15]
+
+agent_role_mapping:
+  # Maps agent capabilities to swarm/hive roles
+  queen_candidates:
+    - "project_supervisor_orchestrator"
+    - "research_orchestrator"
+    - "context_manager"
+    
+  specialist_roles:
+    development:
+      - "ios_developer"
+      - "backend_architect"
+      - "ai_engineer"
+      
+    research:
+      - "tree_analysis_specialist"
+      - "forestry_business_analyst"
+      
+    coordination:
+      - "project_supervisor_orchestrator"
+      - "research_orchestrator"
+      
+  worker_pool:
+    - "backend_architect"
+    - "ai_engineer"
+    - "ios_developer"
+    - "tree_analysis_specialist"
+    - "forestry_business_analyst"
+
+performance_thresholds:
+  # Performance metrics and thresholds for adaptive coordination
+  efficiency_thresholds:
+    excellent: 0.9
+    good: 0.7
+    acceptable: 0.5
+    poor: 0.3
+    
+  response_time_thresholds:
+    fast: 30  # seconds
+    moderate: 120
+    slow: 300
+    timeout: 600
+    
+  consensus_thresholds:
+    high_confidence: 0.85
+    medium_confidence: 0.65
+    low_confidence: 0.45
+
+learning_configuration:
+  adaptive_learning_rate: 0.1
+  performance_history_size: 100
+  pattern_detection_threshold: 0.8
+  emergence_sensitivity: 0.75
+  
+  feedback_loops:
+    success_reinforcement: 0.15
+    failure_learning: 0.20
+    neutral_adjustment: 0.05
+
+monitoring:
+  metrics_retention_days: 30
+  health_check_interval: 60  # seconds
+  performance_alert_thresholds:
+    coordination_latency_max: 120  # seconds
+    efficiency_min: 0.4
+    consensus_rate_min: 0.6
+  
+  logging:
+    level: "INFO"
+    structured: true
+    include_agent_details: true
+    include_performance_metrics: true
+
+integration:
+  # Integration points with existing systems
+  agent_manager_integration: true
+  mcp_server_integration: true
+  prometheus_metrics: true
+  
+  external_apis:
+    claude_api: true
+    github_integration: false
+    slack_notifications: false
+    
+  backup_coordination:
+    fallback_to_individual_agents: true
+    fallback_threshold: 0.3
+    backup_timeout: 60
+
+# Task-specific configurations
+task_templates:
+  ios_development:
+    preferred_topology: "hierarchical"
+    coordination_mode: "swarm_hive_hybrid"
+    required_roles: ["queen", "specialist", "worker"]
+    agent_capabilities: ["ios", "swift", "mobile"]
+    
+  ai_research:
+    preferred_topology: "collective"
+    coordination_mode: "hive_only"
+    required_roles: ["specialist", "coordinator"]
+    agent_capabilities: ["ai", "research", "analysis"]
+    
+  forestry_business:
+    preferred_topology: "adaptive"
+    coordination_mode: "swarm_hive_hybrid"
+    required_roles: ["specialist", "worker", "coordinator"]
+    agent_capabilities: ["forestry", "business", "analysis"]
+    
+  multi_agent_orchestration:
+    preferred_topology: "mesh"
+    coordination_mode: "adaptive_selection"
+    required_roles: ["coordinator", "specialist"]
+    agent_capabilities: ["orchestration", "coordination", "management"]

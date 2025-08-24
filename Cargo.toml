@@ -1,0 +1,60 @@
+[package]
+name = "anf"
+version = "1.0.0"
+edition = "2021"
+description = "Agent Native Framework - Terminal-based agent coordination"
+authors = ["TreeAI Team"]
+license = "MIT"
+
+[[bin]]
+name = "anf"
+path = "src/cli.rs"
+
+[[bin]]
+name = "anfd"
+path = "src/daemon.rs"
+
+[dependencies]
+# CLI and Terminal
+clap = { version = "4.4", features = ["derive"] }
+crossterm = "0.27"
+console = "0.15"
+indicatif = "0.17"
+
+# Async Runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# Networking
+tokio-util = { version = "0.7", features = ["codec"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# Error Handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Time and UUID
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Terminal UI enhancements
+tui = "0.19"
+ratatui = "0.24"
+
+# Configuration
+config = "0.13"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"

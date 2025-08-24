@@ -1,0 +1,153 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: agent-native-framework
+  labels:
+    app: agent-native-framework
+spec:
+  selector:
+    matchLabels:
+      app: agent-native-framework
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    honorLabels: true
+  - port: node-metrics
+    interval: 30s
+    path: /metrics
+    honorLabels: true
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: agent-native-framework-alerts
+  labels:
+    app: agent-native-framework
+spec:
+  groups:
+  - name: agent-native-framework.rules
+    rules:
+    # SLI/SLO Alerts
+    - alert: AgentActivationFailureRate
+      expr: |
+        (
+          rate(agent_activations_total{status="error"}[5m]) /
+          rate(agent_activations_total[5m])
+        ) > 0.05
+      for: 2m
+      labels:
+        severity: warning
+        service: agent-native-framework
+      annotations:
+        summary: "High agent activation failure rate"
+        description: "Agent activation failure rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+    
+    - alert: CoordinationLatencyHigh
+      expr: |
+        histogram_quantile(0.95, rate(coordination_duration_seconds_bucket[5m])) > 30
+      for: 5m
+      labels:
+        severity: warning
+        service: agent-native-framework
+      annotations:
+        summary: "High coordination latency"
+        description: "95th percentile coordination latency is {{ $value }}s over the last 5 minutes"
+    
+    - alert: CircuitBreakerOpen
+      expr: |
+        circuit_breaker_state > 0
+      for: 1m
+      labels:
+        severity: critical
+        service: agent-native-framework
+      annotations:
+        summary: "Circuit breaker {{ $labels.circuit_name }} is open"
+        description: "Circuit breaker {{ $labels.circuit_name }} has been open for more than 1 minute"
+    
+    # Resource Alerts
+    - alert: HighMemoryUsage
+      expr: |
+        (container_memory_usage_bytes{pod=~"agent-native-framework-.*"} / container_spec_memory_limit_bytes) > 0.85
+      for: 5m
+      labels:
+        severity: warning
+        service: agent-native-framework
+      annotations:
+        summary: "High memory usage"
+        description: "Pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }}"
+    
+    - alert: HighCPUUsage
+      expr: |
+        (rate(container_cpu_usage_seconds_total{pod=~"agent-native-framework-.*"}[5m]) / container_spec_cpu_quota) > 0.8
+      for: 10m
+      labels:
+        severity: warning
+        service: agent-native-framework
+      annotations:
+        summary: "High CPU usage"
+        description: "Pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }}"
+    
+    # Health Alerts
+    - alert: ServiceDown
+      expr: |
+        up{job="agent-native-framework"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: agent-native-framework
+      annotations:
+        summary: "Service is down"
+        description: "Agent Native Framework service has been down for more than 1 minute"
+    
+    - alert: HealthCheckFailing
+      expr: |
+        health_status{component="overall"} == 0
+      for: 2m
+      labels:
+        severity: critical
+        service: agent-native-framework
+      annotations:
+        summary: "Health check failing"
+        description: "Overall health check has been failing for more than 2 minutes"
+    
+    - alert: TooManyActiveAgents
+      expr: |
+        active_agents_count > 20
+      for: 5m
+      labels:
+        severity: warning
+        service: agent-native-framework
+      annotations:
+        summary: "Too many active agents"
+        description: "Active agent count is {{ $value }}, which may indicate resource exhaustion"
+    
+    # Error Budget Alerts
+    - alert: ErrorBudgetBurnRateHigh
+      expr: |
+        (
+          rate(agent_errors_total[1h]) /
+          (rate(agent_activations_total[1h]) * 0.001)  # 99.9% SLO
+        ) > 10
+      for: 2m
+      labels:
+        severity: critical
+        service: agent-native-framework
+      annotations:
+        summary: "High error budget burn rate"
+        description: "Error budget is burning at {{ $value }}x the sustainable rate"
+    
+    - alert: ErrorBudgetExhausted
+      expr: |
+        (
+          increase(agent_errors_total[30d]) /
+          (increase(agent_activations_total[30d]) * 0.001)
+        ) > 1
+      for: 0m
+      labels:
+        severity: critical
+        service: agent-native-framework
+      annotations:
+        summary: "Monthly error budget exhausted"
+        description: "Monthly error budget has been exhausted. Consider implementing feature freeze."
