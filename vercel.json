@@ -1,47 +1,28 @@
 {
   "version": 2,
   "name": "claude-hive-swarm-guide",
-  "builds": [
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
     {
-      "src": "index.html",
-      "use": "@vercel/static"
+      "source": "/guide",
+      "destination": "/docs/how-to-guide.html"
     },
     {
-      "src": "docs/**",
-      "use": "@vercel/static"
+      "source": "/start", 
+      "destination": "/START_HERE.md"
     },
     {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/index.html"
+      "source": "/install",
+      "destination": "/scripts/install-claude-hive-swarm.sh"
     },
     {
-      "src": "/guide",
-      "dest": "/docs/how-to-guide.html"
+      "source": "/manifest.json",
+      "destination": "/public/manifest.json"
     },
     {
-      "src": "/start",
-      "dest": "/START_HERE.md"
-    },
-    {
-      "src": "/install",
-      "dest": "/scripts/install-claude-hive-swarm.sh",
-      "headers": {
-        "Content-Type": "text/plain; charset=utf-8"
-      }
-    },
-    {
-      "src": "/manifest.json",
-      "dest": "/public/manifest.json"
-    },
-    {
-      "src": "/sw.js",
-      "dest": "/public/sw.js"
+      "source": "/sw.js",
+      "destination": "/public/sw.js"
     }
   ],
   "headers": [
@@ -62,12 +43,15 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
-    }
-  ],
-  "rewrites": [
+    },
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "source": "/scripts/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
     }
   ]
 }
