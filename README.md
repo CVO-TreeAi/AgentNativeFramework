@@ -1,22 +1,43 @@
-# 🤖 Agent Native Framework (ANF)
+# 🧠🐛 Agent Native Framework (ANF)
 
-**Terminal-native agent coordination system** - Your personal "Jarvis" for command-line productivity.
+**Collective AI Intelligence for Developers** - Transform Claude Code into a swarm coordination powerhouse.
 
-ANF transforms your terminal into an intelligent agent coordination hub, providing instant access to 300+ specialized AI agents through keyboard-driven workflows and rich terminal interfaces.
+ANF enables 300+ specialized AI agents to work together through swarm intelligence and hive mind coordination. Instead of working with one AI, command entire teams of expert agents collaborating on your coding challenges.
 
-## 🚀 Quick Start
+## 🎯 **NEW**: Claude Hive Swarm Integration
+
+**The game-changer:** Simply type `claude hive swarm` and Claude Code becomes a collective intelligence system!
 
 ```bash
-# One-line install
-curl -sSL https://raw.githubusercontent.com/CVO-TreeAi/AgentNativeFramework/main/install.sh | bash
+# One command to rule them all
+claude --dangerously-skip-permissions hive swarm
 
-# Start the daemon
-anfd --start
-
-# Try it out
-anf ask "What can you help me with?"
-anf interactive  # Enter Jarvis mode
+# Claude Code opens with 300+ agents ready for coordination
+# Ask: "Create a development swarm and help me build a secure API"
+# Watch: Multiple expert agents coordinate to solve your task!
 ```
+
+## 📖 **[🌟 START HERE: Interactive How-To Guide 🌟](docs/how-to-guide.html)**
+
+**Click above for the complete interactive guide** with:
+- ✅ Step-by-step setup from fresh terminal
+- ✅ Copy-paste examples you can use immediately  
+- ✅ Interactive simulations of swarm coordination
+- ✅ Real-world workflows and use cases
+- ✅ Comprehensive troubleshooting help
+
+> **🎯 TL;DR**: Want to jump straight in? Run `./scripts/install-claude-hive-swarm.sh` then `claude --dangerously-skip-permissions hive swarm` and you're ready to command 300+ AI agents!
+
+---
+
+## 🌟 **Alternative Entry Points:**
+
+- **📖 [Interactive How-To Guide](docs/how-to-guide.html)** - Complete hands-on tutorial *(Recommended)*
+- **🎮 [Live Demo](index.html)** - Visual introduction with examples
+- **📋 [Quick Reference](docs/CLAUDE_HIVE_SWARM.md)** - Command reference and workflows
+- **🔧 [Installation Only](scripts/install-claude-hive-swarm.sh)** - Just run the installer
+
+---
 
 ## ⚡ Core Features
 
